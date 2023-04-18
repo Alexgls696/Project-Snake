@@ -95,20 +95,28 @@ void TapTexture(SDL_Renderer* MenuRenderer, int x, int y) {
 
 }
 
-
+void DrawSettingsMenuText(SDL_Renderer*& renderer, SDL_Texture* texture) {
+    SDL_Rect Rect = {470,170,300,70};
+    SDL_RenderCopy(renderer, texture, NULL, &Rect);
+}
 void DrawCloseTextTexture(SDL_Renderer*&renderer,SDL_Texture*texture) {
     SDL_Rect Rect = { 330,200,600,50 };
     SDL_RenderCopy(renderer, texture,NULL,&Rect);
 }
-SDL_Texture* Get_CloseTextTexture(SDL_Renderer*&renderer,char*text,TTF_Font*font){
+void DrawVolumeTextTexture(SDL_Renderer*&renderer, SDL_Texture* texture) {
+    SDL_Rect Rect = { 520,240,200,40 };
+    SDL_RenderCopy(renderer, texture,NULL,&Rect);
+}
+SDL_Texture* Get_TextTexture(SDL_Renderer*&renderer,char*text,TTF_Font*font){
     SDL_Surface* TextSurface = NULL;
     SDL_Color fore_color = { 240,100,9 };
-    SDL_Color back_color = { 255,20,20 };
+    SDL_Color back_color = { 255,20,20,255 };
     TextSurface = TTF_RenderUTF8_Solid(font, text, fore_color);
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, TextSurface);
     SDL_FreeSurface(TextSurface);
     return texture;
 }
+
 
 bool OK_CLOSE(int x, int y) {
     if ((x >= 740 && x <= 820) && (y >= 340 && y <= 420)) {
@@ -127,6 +135,31 @@ bool CloseFunction(int x,int y) {
     }
     else
         return false;
+}
+bool SettingMenuOpen(int x, int y) {
+    if((x>=1210&&x<=1280)&&(y>=0&&y<=70))
+        return true;
+    return false;
+}
+bool SettingsMenuClose(int x, int y) {
+    if ((x >= 860 && x <= 900) && (y >= 140 && y <= 180))
+        return true;
+    return false;
+}
+
+void EditVolume(SDL_Renderer* renderer, SDL_Event event,SDL_Rect &Rect,SDL_Texture*texture, int &x) {
+    int y = 300;
+    int volume;
+    double volumeRez;
+    if ((event.button.x >= 520 && event.button.x <= 720)&&(event.button.button == SDL_PRESSED)) {
+        Rect = { event.button.x-10,300,20,20 };
+        SDL_RenderCopy(renderer, texture, NULL, &Rect);
+        x = event.button.x-10;
+        volume = event.button.x - 520;
+        volumeRez = (volume / 200.0) * 100;
+        Volume(int(volumeRez));
+    }
+    
 }
 int main(int argc, char **argv)
 {
@@ -199,27 +232,43 @@ int main(int argc, char **argv)
         SDL_FreeSurface(SettingSurface);
         SDL_Rect SETTING_RECT = { 1280-70,0,70,70 };
         DrawTextureMenu(MenuRenderer, SETTING_Texture, SETTING_RECT);
+
+        SDL_Surface* SettingBackSurface = IMG_Load("Textures\\SettingsBack.bmp");
+        SDL_SetColorKey(SettingBackSurface, SDL_TRUE, SDL_MapRGB(SettingBackSurface->format, 255, 255, 255));
+        SDL_Texture* SETTING_Texture_Back = SDL_CreateTextureFromSurface(MenuRenderer, SettingBackSurface);
+        SDL_FreeSurface(SettingBackSurface);
+        SDL_Rect SETTING_RECT_Back = { 330,110,600,600 };
         
-        
+        SDL_Surface* VolumeSurface = IMG_Load("Textures\\Volume.bmp");
+        SDL_SetColorKey(VolumeSurface, SDL_TRUE, SDL_MapRGB(VolumeSurface->format, 255, 255, 255));
+        SDL_Texture* VolumeTexture = SDL_CreateTextureFromSurface(MenuRenderer, VolumeSurface);
+        SDL_FreeSurface(VolumeSurface);
+       
         //ЗВУК
 
         InitMusic();
         PlayFonMusic();
-        Volume(30);
+        Volume(100);
         //ТЕКСТ
 
         TTF_Init();
         TTF_Font* font = TTF_OpenFont("Text.ttf", 24);
-        char text[67] = u8"Вы уверены, что хотите выйти из игры?";
-        
+        TTF_Font* SettingFont = TTF_OpenFont("Text.ttf", 56);
+        TTF_Font* SettingMenuFont = TTF_OpenFont("Text.ttf", 36);
+        char text[] = u8"Вы уверены, что хотите выйти из игры?";
+        char TextSettings[] = u8"Ползунок изменения громкости";
+        char SettingsMenu[] = u8"НАСТРОЙКИ";
         SDL_Texture* CloseTextTexture;
-        CloseTextTexture = Get_CloseTextTexture(MenuRenderer, text, font);
-
+        CloseTextTexture = Get_TextTexture(MenuRenderer, text, font);
+        SDL_Texture* SettingsTexture = Get_TextTexture(MenuRenderer, TextSettings, SettingFont);
+        SDL_Texture* SettingMenuTexture = Get_TextTexture(MenuRenderer, SettingsMenu, SettingMenuFont);
         bool quit = false;
         SDL_Event event;
         int x, y;
+        int X_Volume = 700;
         bool MenuClose = false;
         bool MainMenu = true;
+        bool SettingMenu = false;
         int Count = 0;
         while (!quit) {
             SDL_PollEvent(&event);
@@ -232,9 +281,17 @@ int main(int argc, char **argv)
             if (MainMenu == true) {
                
                 if ((event.type == SDL_MOUSEBUTTONDOWN) && (event.button.button == SDL_BUTTON_LEFT)) {
-                    if (event.button.button == SDL_PRESSED) {
                         TapTexture(MenuRenderer, x, y);
+                    
+                    if (CloseFunction(event.button.x, event.button.y)) {
+                        MenuClose = true;
+                        MainMenu = false;
                     }
+                    if (SettingMenuOpen(event.button.x, event.button.y)) {
+                        MainMenu = false;
+                        SettingMenu = true;
+                    }
+                   
                 }
                 if ((event.type == SDL_MOUSEBUTTONUP) && (event.button.button == SDL_BUTTON_LEFT)) {
                     DrawTextureMenu(MenuRenderer, FON_TEXTURE, FON_RECT);
@@ -244,12 +301,7 @@ int main(int argc, char **argv)
                     DrawTextureMenu(MenuRenderer, HELP_Texture, HELP_RECT);
                     DrawTextureMenu(MenuRenderer, SETTING_Texture, SETTING_RECT);
                 }
-                if ((event.type == SDL_MOUSEBUTTONDOWN) && (event.button.button == SDL_BUTTON_LEFT)) {
-                    if (CloseFunction(event.button.x, event.button.y)) {
-                        MenuClose = true;
-                        MainMenu = false;
-                    }
-                }
+
             }
             if (MenuClose == true) {
                 SDL_SetTextureAlphaMod(WHITE_Texture, 4);
@@ -265,6 +317,37 @@ int main(int argc, char **argv)
                         MenuClose = false;
                         MainMenu = true;
                     }
+                }
+            }
+            if (SettingMenu == true) {
+                
+                SDL_SetTextureAlphaMod(WHITE_Texture, 4);
+                DrawTextureMenu(MenuRenderer, WHITE_Texture, WHITE_RECT);
+                DrawTextureMenu(MenuRenderer, SETTING_Texture_Back, SETTING_RECT_Back);
+                //SDL_Rect SettingRect = { 330,200,600,400 };
+                //SDL_SetRenderDrawColor(MenuRenderer, 204, 240, 209,0);
+                //SDL_RenderFillRect(MenuRenderer, &SettingRect);
+
+                SDL_Rect VolumeRect = { X_Volume,300,20,20 };
+
+                SDL_SetRenderDrawColor(MenuRenderer, 0, 0, 0, 0);
+                for (int i = 0; i < 3;i++) {
+                    SDL_RenderDrawLine(MenuRenderer, 520, 308 + i, 710, 308 + i);
+                }
+                DrawSettingsMenuText(MenuRenderer, SettingMenuTexture);
+                DrawVolumeTextTexture(MenuRenderer, SettingsTexture);
+                SDL_Rect CloseRect = { 860,140,40,40 };
+                DrawTextureMenu(MenuRenderer, NoCloseTexture, CloseRect);
+                DrawTextureMenu(MenuRenderer, VolumeTexture, VolumeRect);
+                if ((event.type == SDL_MOUSEBUTTONDOWN) && (event.button.button == SDL_BUTTON_LEFT)) {
+                    if ((X_Volume >=X_Volume && X_Volume <= X_Volume+20) && (y >= 300 && y <= 320)) {
+                        EditVolume(MenuRenderer, event, VolumeRect, VolumeTexture,X_Volume);
+                    }
+                }
+                if (SettingsMenuClose(event.button.x, event.button.y)&&(event.type==SDL_MOUSEBUTTONDOWN)&&(event.button.button==SDL_BUTTON_LEFT)) {
+                    MainMenu = true;
+                    SettingMenu = false;
+                    TapSound();
                 }
             }
       
