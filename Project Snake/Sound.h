@@ -6,3 +6,5 @@ void PlayFonMusic();
 void InitMusic();
 void Volume(int volume);
 void TapSound();
+void PlayEasySound();
+void UKUS_Sound();

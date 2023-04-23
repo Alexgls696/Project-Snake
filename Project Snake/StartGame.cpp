@@ -1,9 +1,8 @@
 #include "StartGame.h"
 #include "Sound.h"
 #include <ctime>
-#include <chrono>
-#include <thread>
 #include "GameModEasy.h"
+#include "SDL_ttf.h"
 
 //“≈ —“”–€ Ã≈Õﬁ
 SDL_Texture* EasyUpTexture = NULL;
