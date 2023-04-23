@@ -1,8 +1,10 @@
-﻿#include "SDL.h"
+﻿#include "StartGame.h"
+#include "SDL.h"
 #include "SDL_Image.h"
 #include "Sound.h"
 #include <iostream>
 #include "SDL_ttf.h"
+
 
 
 SDL_Window* window = NULL;
@@ -10,7 +12,7 @@ SDL_Texture* CloseGoodTexture = NULL;
 SDL_Texture* NoCloseTexture = NULL;
 bool init() {
     bool GREAT = true;
-    if (SDL_Init(SDL_INIT_EVERYTHING < 0)) {
+    if (SDL_Init((SDL_INIT_EVERYTHING)<0 )) {
         std::cout << "Ошибка, SDL НЕ БЫЛ ЗАПУЩЕН" << SDL_GetError() << std::endl;
         GREAT = false;
     }
@@ -71,10 +73,12 @@ void ActiveSettingsTexture(SDL_Renderer* MenuRenderer) {
 }
 
 
-void TapTexture(SDL_Renderer* MenuRenderer, int x, int y) {
+void Tap(SDL_Renderer* MenuRenderer, int x, int y, bool &Start,bool &MainMenu) {
     if ((x > 530 && x < 740) && (y > 50 && y < 150)) {
         ActiveSTARTTexture(MenuRenderer);
         TapSound();
+        Start = true;
+        MainMenu = false;
     }
     if ((x > 530 && x < 740) && (y > 270 && y < 370)) {
         ActiveHELPTexture(MenuRenderer);
@@ -184,14 +188,15 @@ void EditVolume(SDL_Renderer* renderer, SDL_Event event, SDL_Rect& Rect, SDL_Tex
 
 int main(int argc, char** argv)
 {
-    //SDL_DisplayMode displayMode;
-    //int request = SDL_GetDesktopDisplayMode(0, &displayMode);
+    SDL_DisplayMode displayMode;
+    int request = SDL_GetDesktopDisplayMode(0, &displayMode);
     if (!(init())) {
         std::cout << "Не удалось запустить программу" << std::endl;
     }
     else {
+        std::cout << SDL_GetNumRenderDrivers() << std::endl;
         SDL_Renderer* MenuRenderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED || SDL_RENDERER_PRESENTVSYNC);//acelerated - аппаратное ускорение, верт синхр.
-
+        
         //Текстуры меню
         SDL_Surface* FON = IMG_Load("Textures\\FON_MENU.bmp");
         SDL_SetColorKey(FON, SDL_TRUE, SDL_MapRGB(FON->format, 255, 255, 255));
@@ -315,6 +320,8 @@ int main(int argc, char** argv)
         bool MainMenu = true;
         bool SettingMenu = false;
         bool FULLSCREEN_ON = false;
+        bool GameStartDiff = false;
+        bool LoadDiffTexture = true;
         int Count = 0;
         while (!quit) {
             SDL_PollEvent(&event);
@@ -324,10 +331,8 @@ int main(int argc, char** argv)
                 quit = true;
             }
             if (MainMenu == true) {
-
+           
                 if ((event.type == SDL_MOUSEBUTTONDOWN) && (event.button.button == SDL_BUTTON_LEFT)) {
-                    TapTexture(MenuRenderer, x, y);
-
                     if (CloseFunction(event.button.x, event.button.y)) {
                         MenuClose = true;
                         MainMenu = false;
@@ -336,7 +341,8 @@ int main(int argc, char** argv)
                         MainMenu = false;
                         SettingMenu = true;
                     }
-
+                    Tap(MenuRenderer, x, y,GameStartDiff,MainMenu);
+                    continue;
                 }
                 if ((event.type == SDL_MOUSEBUTTONUP) && (event.button.button == SDL_BUTTON_LEFT)) {
                     DrawTextureMenu(MenuRenderer, FON_TEXTURE, FON_RECT);
@@ -346,7 +352,8 @@ int main(int argc, char** argv)
                     DrawTextureMenu(MenuRenderer, HELP_Texture, HELP_RECT);
                     DrawTextureMenu(MenuRenderer, SETTING_Texture, SETTING_RECT);
                 }
-
+                SDL_RenderPresent(MenuRenderer);
+                SDL_Delay(16);
             }
             if (MenuClose == true) {
                 SDL_SetTextureAlphaMod(WHITE_Texture, 4);
@@ -357,7 +364,7 @@ int main(int argc, char** argv)
                 if ((event.type == SDL_MOUSEBUTTONDOWN) && (event.button.button == SDL_BUTTON_LEFT)) {
                     if (OK_CLOSE(event.button.x, event.button.y)) {
                         TapSound();
-                        SDL_Delay(1000);
+                        SDL_Delay(500);
                         quit = true;
                     }
                     if (NO_CLOSE(event.button.x, event.button.y)) {
@@ -366,6 +373,8 @@ int main(int argc, char** argv)
                         TapSound();
                     }
                 }
+                SDL_RenderPresent(MenuRenderer);
+                SDL_Delay(16);
             }
             if (SettingMenu == true) {
 
@@ -398,7 +407,6 @@ int main(int argc, char** argv)
                         Volume(100);
                     }
                 }
-                //}
                 if (SettingsMenuClose(event.button.x, event.button.y) && (event.type == SDL_MOUSEBUTTONDOWN) && (event.button.button == SDL_BUTTON_LEFT)) {
                     MainMenu = true;
                     SettingMenu = false;
@@ -419,13 +427,18 @@ int main(int argc, char** argv)
                         FULLSCREEN_ON = false;
                     }
                 }
-
+                SDL_RenderPresent(MenuRenderer);
+                SDL_Delay(16);
+            } //ВЫБОР СЛОЖНОСТИ
+            
+            if (GameStartDiff == true) {
+                MenuDiff(MenuRenderer, GameStartDiff,MainMenu,LoadDiffTexture,event,window);
             }
-
-            SDL_RenderPresent(MenuRenderer);
-            SDL_Delay(16);
+            
 
         }
+
+
         SDL_DestroyTexture(CLOSE_Texture);
         SDL_DestroyTexture(FON_TEXTURE);
         SDL_DestroyTexture(HELP_Texture);
