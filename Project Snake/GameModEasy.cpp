@@ -131,7 +131,7 @@ void GameLogicEasy() {
 	SnakeX[0] = xE;
 	SnakeY[0] = yE;
 
-	for (int i = 1; i < LenSnake;i++) {
+	for (int i = 0; i < LenSnake;i++) {
 		LastXX = SnakeX[i];
 		LastYY = SnakeY[i];
 		SnakeX[i] = LastX;
@@ -188,9 +188,10 @@ void GameLogicEasy() {
 		FruitSpawn();
 	}
 	for (int i = 1; i < LenSnake;i++) { //Проверка не был ли съеден хвост
-		//if (SnakeX[i] == xE && SnakeY[i] == yE)
-			//cout << "GameOver!" << endl;
-			//GameOver = true;
+		if (SnakeX[i] == xE && SnakeY[i] == yE) {
+			cout << "GameOver!" << endl;
+			GameOver = true;
+		}
 	}
 	cout << xE << " " << yE << endl;
 	if ((xE < 280 || xE > 960) || (yE < 0 || yE > 680)) {
@@ -219,7 +220,11 @@ void EasyMode(SDL_Renderer* renderer, SDL_Event event,bool &Easy,bool &StartGame
 	else {
 		Easy = false;
 		StartGame = false;
+		GameOver = false;
 		LoadTexturesEasyBool = true;
+		score = 0;
+		xE = 600, yE = 720 / 2 - 40;
+		LenSnake = 1;
 		DeleteTexturesEasy();
 		//return;
 	}
