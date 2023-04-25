@@ -6,9 +6,8 @@
 #include "SDL_ttf.h"
 #include <ctime>
 #include <string>
-
-
 using namespace std;
+
 void EasyMode(SDL_Renderer* renderer, SDL_Event event, bool& Easy, bool& StartGame);
 
 

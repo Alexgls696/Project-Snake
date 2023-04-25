@@ -10,20 +10,23 @@ void Volume(int volume) {
 }
 
 void PlayFonMusic() {
-	Ambient = Mix_LoadMUS("Sound\\Ambient.mp3");
 	Mix_PlayMusic(Ambient, -1);
 }
 void TapSound() {
-	Tap = Mix_LoadWAV("Sound\\TAP.mp3");
 	Mix_PlayChannel(-1, Tap, 0);
 }
 void PlayEasySound() {
-	LevelEasy = Mix_LoadMUS("Sound\\FON_EASY_SOUND.mp3");
 	Mix_PlayMusic(LevelEasy, -1);
 }
 void UKUS_Sound() {
-	UKUS = Mix_LoadWAV("Sound\\KUSI.mp3");
 	Mix_PlayChannel(-1, UKUS, 0);
+}
+
+void LoadSound() {
+	Ambient = Mix_LoadMUS("Sound\\Ambient.mp3");
+	Tap = Mix_LoadWAV("Sound\\TAP.mp3");
+	LevelEasy = Mix_LoadMUS("Sound\\FON_EASY_SOUND.mp3");
+	UKUS = Mix_LoadWAV("Sound\\KUSI.mp3");
 }
 void InitMusic() {
 	Mix_Init(0);

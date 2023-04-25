@@ -22,17 +22,10 @@ SDL_Rect NormalRect = { 530,160,220,100 };
 SDL_Rect HardRect = { 530,270,220,100 };
 SDL_Rect BackRect = { 530,380,220,100 };
 
-//ÒÅÊÑÒÓÐÛ ÈÃÐÛ
-
-
-
-
 bool Easy = false;
 bool Normal = false;
 bool Hard = false;
 bool StartGame = false;
-
-
 
 void TapDiff(int x, int y, bool& Back, SDL_Renderer* renderer, bool& Easy, bool& Normal, bool& Hard, bool &StartGame) {
 	if ((x > 530 && x < 740) && (y > 50 && y < 150)) {
@@ -87,8 +80,6 @@ void LoadTextures(SDL_Renderer* renderer) {
 
 }
 
-
-
 void DrawTextureMenu(SDL_Renderer* renderer) {
 	SDL_RenderCopy(renderer, FONTexture, NULL, &FON_Rect);
 	SDL_RenderCopy(renderer, EasyUpTexture, NULL, &EasyRect);
@@ -96,19 +87,9 @@ void DrawTextureMenu(SDL_Renderer* renderer) {
 	SDL_RenderCopy(renderer, HardUpTexture, NULL, &HardRect);
 	SDL_RenderCopy(renderer, BackUpTexture, NULL, &BackRect);
 }
-void TimerEasy(int ms) {
-	int CLOCKS_PER_MSEC = CLOCKS_PER_SEC / 1000;
-	clock_t end_time = clock() + ms * CLOCKS_PER_MSEC;
-	while (clock() < end_time);
-
-}
-
-
 
 void MenuDiff(SDL_Renderer* renderer, bool& FlagDiffMenu, bool& MainMenu, bool& LoadTexture,SDL_Event event,SDL_Window*window) {
 	srand(time(NULL));
-
-	std::setlocale(LC_ALL, "Rus");
 
 	bool Back = false;
 	bool GameMenu = false;
@@ -125,6 +106,7 @@ void MenuDiff(SDL_Renderer* renderer, bool& FlagDiffMenu, bool& MainMenu, bool& 
 			TapDiff(x, y, Back, renderer, Easy, Normal, Hard, StartGame);
 		}
 		SDL_RenderPresent(renderer);
+		SDL_Delay(16);
 	}
 	if (Back == true) {
 		SDL_DestroyTexture(EasyUpTexture);
@@ -139,12 +121,8 @@ void MenuDiff(SDL_Renderer* renderer, bool& FlagDiffMenu, bool& MainMenu, bool& 
 		FlagDiffMenu = false;
 		return;
 	}
-
 	if (Easy == true) {
-		//std::thread t(GameThread, renderer, event);
-		//t.join();
+
 		EasyMode(renderer, event,Easy,StartGame);
 	}
-
-		
 }

@@ -8,9 +8,50 @@
 
 
 SDL_Window* window = NULL;
+
+//ИНИЦИАЛИЗАЦИЯ ТЕКСТУР
+
 SDL_Texture* CloseGoodTexture = NULL;
 SDL_Texture* NoCloseTexture = NULL;
-bool init() {
+SDL_Surface* ActiveClose = NULL;
+SDL_Texture* ACTIVE_CLOSE_Texture = NULL;
+SDL_Surface* ActiveHelp = NULL;
+SDL_Texture* ACTIVE_HELP_Texture = NULL;
+SDL_Surface* ActiveSTART = NULL;
+SDL_Texture* ACTIVE_START_Texture = NULL;
+SDL_Surface* ActiveSETTINGS = NULL;
+SDL_Texture* ACTIVE_SETTINGS_Texture = NULL;
+SDL_Surface* ActiveACHIV = NULL;
+SDL_Texture* ACTIVE_ACHIV_Texture = NULL;
+SDL_Surface* FON = NULL;
+SDL_Texture* FON_TEXTURE = NULL;
+SDL_Surface* StartGame = NULL;
+SDL_Texture* StartGameTexture = NULL;
+SDL_Surface* TablRec = NULL;
+SDL_Texture* TablRecTexture = NULL;
+SDL_Surface* HELP = NULL;
+SDL_Texture* HELP_Texture = NULL;
+SDL_Surface* CLOSE = NULL;
+SDL_Texture* CLOSE_Texture = NULL;
+SDL_Surface* GOOD = NULL;
+SDL_Surface* NO = NULL;
+SDL_Surface* WHITE = NULL;
+SDL_Texture* WHITE_Texture = NULL;
+SDL_Surface* SettingSurface = NULL;
+SDL_Texture* SETTING_Texture = NULL;
+SDL_Surface* SettingBackSurface = NULL;
+SDL_Texture* SETTING_Texture_Back = NULL;
+SDL_Surface* VolumeSurface = NULL;
+SDL_Texture* VolumeTexture = NULL;
+SDL_Surface* VolumeONSurface = NULL;
+SDL_Texture* VolumeONTexture = NULL;
+SDL_Surface* VolumeOFFSurface = NULL;
+SDL_Texture* VolumeOFFTexture = NULL;
+
+
+
+bool init() //ПРОВЕРКА ЗАПУСКА ОКНА И SDL
+{
     bool GREAT = true;
     if (SDL_Init((SDL_INIT_EVERYTHING)<0 )) {
         std::cout << "Ошибка, SDL НЕ БЫЛ ЗАПУЩЕН" << SDL_GetError() << std::endl;
@@ -30,48 +71,31 @@ void DrawTextureMenu(SDL_Renderer* MenuRenderer, SDL_Texture* texture, SDL_Rect 
     SDL_RenderCopy(MenuRenderer, texture, NULL, &Rect);
 }
 
-
 void ActiveCLOSETexture(SDL_Renderer* MenuRenderer) {
-    SDL_Surface* ActiveClose = IMG_Load("Textures\\CloseGameActive.bmp");
-    SDL_SetColorKey(ActiveClose, SDL_TRUE, SDL_MapRGB(ActiveClose->format, 255, 255, 255));
-    SDL_Texture* ACTIVE_CLOSE_Texture = SDL_CreateTextureFromSurface(MenuRenderer, ActiveClose);
-    SDL_FreeSurface(ActiveClose);
     SDL_Rect ACTIVE_CLOSE_RECT = { 530,380,220,100 };
     DrawTextureMenu(MenuRenderer, ACTIVE_CLOSE_Texture, ACTIVE_CLOSE_RECT);
 }
+
 void ActiveHELPTexture(SDL_Renderer* MenuRenderer) {
-    SDL_Surface* ActiveHelp = IMG_Load("Textures\\HelpACTIVE.bmp");
-    SDL_SetColorKey(ActiveHelp, SDL_TRUE, SDL_MapRGB(ActiveHelp->format, 255, 255, 255));
-    SDL_Texture* ACTIVE_HELP_Texture = SDL_CreateTextureFromSurface(MenuRenderer, ActiveHelp);
-    SDL_FreeSurface(ActiveHelp);
     SDL_Rect ACTIVE_HELP_RECT = { 530,270,220,100 };
     DrawTextureMenu(MenuRenderer, ACTIVE_HELP_Texture, ACTIVE_HELP_RECT);
 }
+
 void ActiveSTARTTexture(SDL_Renderer* MenuRenderer) {
-    SDL_Surface* ActiveSTART = IMG_Load("Textures\\StartGameACTIVE.bmp");
-    SDL_SetColorKey(ActiveSTART, SDL_TRUE, SDL_MapRGB(ActiveSTART->format, 255, 255, 255));
-    SDL_Texture* ACTIVE_START_Texture = SDL_CreateTextureFromSurface(MenuRenderer, ActiveSTART);
-    SDL_FreeSurface(ActiveSTART);
     SDL_Rect ACTIVE_START_RECT = { 530,50,220,100 };
     DrawTextureMenu(MenuRenderer, ACTIVE_START_Texture, ACTIVE_START_RECT);
 }
+
 void ActiveACHIVTexture(SDL_Renderer* MenuRenderer) {
-    SDL_Surface* ActiveSETTINGS = IMG_Load("Textures\\AchivACTIVE.bmp");
-    SDL_SetColorKey(ActiveSETTINGS, SDL_TRUE, SDL_MapRGB(ActiveSETTINGS->format, 255, 255, 255));
-    SDL_Texture* ACTIVE_SETTINGS_Texture = SDL_CreateTextureFromSurface(MenuRenderer, ActiveSETTINGS);
-    SDL_FreeSurface(ActiveSETTINGS);
     SDL_Rect ACTIVE_SETTINGS_RECT = { 530,160,220,100 };
     DrawTextureMenu(MenuRenderer, ACTIVE_SETTINGS_Texture, ACTIVE_SETTINGS_RECT);
 }
+
 void ActiveSettingsTexture(SDL_Renderer* MenuRenderer) {
-    SDL_Surface* ActiveACHIV = IMG_Load("Textures\\SettingsACTIVE.bmp");
-    SDL_SetColorKey(ActiveACHIV, SDL_TRUE, SDL_MapRGB(ActiveACHIV->format, 255, 255, 255));
-    SDL_Texture* ACTIVE_ACHIV_Texture = SDL_CreateTextureFromSurface(MenuRenderer, ActiveACHIV);
-    SDL_FreeSurface(ActiveACHIV);
+    
     SDL_Rect ACTIVE_ACHIV_RECT = { 1210,0,70,70 };
     DrawTextureMenu(MenuRenderer, ACTIVE_ACHIV_Texture, ACTIVE_ACHIV_RECT);
 }
-
 
 void Tap(SDL_Renderer* MenuRenderer, int x, int y, bool &Start,bool &MainMenu) {
     if ((x > 530 && x < 740) && (y > 50 && y < 150)) {
@@ -103,10 +127,12 @@ void DrawSettingsMenuText(SDL_Renderer*& renderer, SDL_Texture* texture) {
     SDL_Rect Rect = { 470,170,300,70 };
     SDL_RenderCopy(renderer, texture, NULL, &Rect);
 }
+
 void DrawFullsreenSettingsMenuText(SDL_Renderer*& renderer, SDL_Texture* texture) {
     SDL_Rect rect = { 500,350,200,30 };
     SDL_RenderCopy(renderer, texture, NULL, &rect);
 }
+
 void DrawCloseTextTexture(SDL_Renderer*& renderer, SDL_Texture* texture) {
     SDL_Rect Rect = { 330,200,600,50 };
     SDL_RenderCopy(renderer, texture, NULL, &Rect);
@@ -122,18 +148,19 @@ SDL_Texture* Get_TextTexture(SDL_Renderer*& renderer, char* text, TTF_Font* font
     return texture;
 }
 
-
 bool OK_CLOSE(int x, int y) {
     if ((x >= 740 && x <= 820) && (y >= 340 && y <= 420)) {
         return true;
     }
     return false;
 }
+
 bool NO_CLOSE(int x, int y) {
     if ((x >= 480 && x <= 540) && (y >= 355 && y <= 405))
         return true;
     return false;
 }
+
 bool CloseFunction(int x, int y) {
     if ((x > 530 && x < 740) && (y > 380 && y < 480)) {
         return true;
@@ -141,16 +168,19 @@ bool CloseFunction(int x, int y) {
     else
         return false;
 }
+
 bool SettingMenuOpen(int x, int y) {
     if ((x >= 1210 && x <= 1280) && (y >= 0 && y <= 70))
         return true;
     return false;
 }
+
 bool SettingsMenuClose(int x, int y) {
     if ((x >= 860 && x <= 900) && (y >= 140 && y <= 180))
         return true;
     return false;
 }
+
 bool SoundOFFTexture(int& x, int y, int& Value) {
     if ((x >= 475 && x < 515) && (y >= 290 && y <= 330)) {
         Value = 510;
@@ -158,6 +188,7 @@ bool SoundOFFTexture(int& x, int y, int& Value) {
     }
     return false;
 }
+
 bool SoundONTexture(int& x, int y, int& Value) {
     if ((x >= 720 && x < 760) && (y >= 290 && y <= 330)) {
         Value = 700;
@@ -165,11 +196,13 @@ bool SoundONTexture(int& x, int y, int& Value) {
     }
     return false;
 }
+
 bool FullScreenMode(int x, int y) {
     if ((x >= 720 && x <= 750) && (y >= 353 && y <= 383))
         return true;
     return false;
 }
+
 void EditVolume(SDL_Renderer* renderer, SDL_Event event, SDL_Rect& Rect, SDL_Texture* texture, int& x) {
     int y = 300;
     int volume;
@@ -186,6 +219,103 @@ void EditVolume(SDL_Renderer* renderer, SDL_Event event, SDL_Rect& Rect, SDL_Tex
 }
 
 
+void LoadTexturesMainMenu(SDL_Renderer* MenuRenderer)
+{
+    ActiveClose = IMG_Load("Textures\\CloseGameActive.bmp");
+    SDL_SetColorKey(ActiveClose, SDL_TRUE, SDL_MapRGB(ActiveClose->format, 255, 255, 255));
+    ACTIVE_CLOSE_Texture = SDL_CreateTextureFromSurface(MenuRenderer, ActiveClose);
+    SDL_FreeSurface(ActiveClose);
+
+    ActiveHelp = IMG_Load("Textures\\HelpACTIVE.bmp");
+    SDL_SetColorKey(ActiveHelp, SDL_TRUE, SDL_MapRGB(ActiveHelp->format, 255, 255, 255));
+    ACTIVE_HELP_Texture = SDL_CreateTextureFromSurface(MenuRenderer, ActiveHelp);
+    SDL_FreeSurface(ActiveHelp);
+
+    ActiveSTART = IMG_Load("Textures\\StartGameACTIVE.bmp");
+    SDL_SetColorKey(ActiveSTART, SDL_TRUE, SDL_MapRGB(ActiveSTART->format, 255, 255, 255));
+    ACTIVE_START_Texture = SDL_CreateTextureFromSurface(MenuRenderer, ActiveSTART);
+    SDL_FreeSurface(ActiveSTART);
+
+    ActiveSETTINGS = IMG_Load("Textures\\AchivACTIVE.bmp");
+    SDL_SetColorKey(ActiveSETTINGS, SDL_TRUE, SDL_MapRGB(ActiveSETTINGS->format, 255, 255, 255));
+    ACTIVE_SETTINGS_Texture = SDL_CreateTextureFromSurface(MenuRenderer, ActiveSETTINGS);
+    SDL_FreeSurface(ActiveSETTINGS);
+
+    ActiveACHIV = IMG_Load("Textures\\SettingsACTIVE.bmp");
+    SDL_SetColorKey(ActiveACHIV, SDL_TRUE, SDL_MapRGB(ActiveACHIV->format, 255, 255, 255));
+    ACTIVE_ACHIV_Texture = SDL_CreateTextureFromSurface(MenuRenderer, ActiveACHIV);
+    SDL_FreeSurface(ActiveACHIV);
+
+    FON = IMG_Load("Textures\\FON_MENU.bmp");
+    SDL_SetColorKey(FON, SDL_TRUE, SDL_MapRGB(FON->format, 255, 255, 255));
+    FON_TEXTURE = SDL_CreateTextureFromSurface(MenuRenderer, FON);
+    SDL_FreeSurface(FON);
+
+    StartGame = IMG_Load("Textures\\Startgame.bmp");
+    SDL_SetColorKey(StartGame, SDL_TRUE, SDL_MapRGB(StartGame->format, 255, 255, 255));
+    StartGameTexture = SDL_CreateTextureFromSurface(MenuRenderer, StartGame);
+    SDL_FreeSurface(StartGame);
+
+    TablRec = IMG_Load("Textures\\Achiv.bmp");
+    SDL_SetColorKey(TablRec, SDL_TRUE, SDL_MapRGB(TablRec->format, 255, 255, 255));
+    TablRecTexture = SDL_CreateTextureFromSurface(MenuRenderer, TablRec);
+    SDL_FreeSurface(TablRec);
+
+    HELP = IMG_Load("Textures\\Help.bmp");
+    SDL_SetColorKey(HELP, SDL_TRUE, SDL_MapRGB(HELP->format, 255, 255, 255));
+    HELP_Texture = SDL_CreateTextureFromSurface(MenuRenderer, HELP);
+    SDL_FreeSurface(HELP);
+
+    CLOSE = IMG_Load("Textures\\Close Game.bmp");
+    SDL_SetColorKey(CLOSE, SDL_TRUE, SDL_MapRGB(CLOSE->format, 255, 255, 255));
+    CLOSE_Texture = SDL_CreateTextureFromSurface(MenuRenderer, CLOSE);
+    SDL_FreeSurface(CLOSE);
+
+    GOOD = IMG_Load("Textures\\YesACTIVE.bmp");
+    SDL_SetColorKey(GOOD, SDL_TRUE, SDL_MapRGB(GOOD->format, 255, 255, 255));
+    CloseGoodTexture = SDL_CreateTextureFromSurface(MenuRenderer, GOOD);
+    SDL_FreeSurface(GOOD);
+
+    NO = IMG_Load("Textures\\UP_CLOSE.bmp");
+    SDL_SetColorKey(NO, SDL_TRUE, SDL_MapRGB(NO->format, 255, 255, 255));
+    NoCloseTexture = SDL_CreateTextureFromSurface(MenuRenderer, NO);
+    SDL_FreeSurface(NO);
+
+
+    //Текстура прозрачности (Беление экрана)
+    WHITE = IMG_Load("Textures\\White.bmp");
+    SDL_SetColorKey(WHITE, SDL_TRUE, SDL_MapRGB(WHITE->format, 5, 5, 5));
+    WHITE_Texture = SDL_CreateTextureFromSurface(MenuRenderer, WHITE);
+    SDL_FreeSurface(WHITE);
+
+    SettingSurface = IMG_Load("Textures\\Settings.bmp");
+    SDL_SetColorKey(SettingSurface, SDL_TRUE, SDL_MapRGB(SettingSurface->format, 255, 255, 255));
+    SETTING_Texture = SDL_CreateTextureFromSurface(MenuRenderer, SettingSurface);
+    SDL_FreeSurface(SettingSurface);
+
+    SettingBackSurface = IMG_Load("Textures\\SettingsBack.bmp");
+    SDL_SetColorKey(SettingBackSurface, SDL_TRUE, SDL_MapRGB(SettingBackSurface->format, 255, 255, 255));
+    SETTING_Texture_Back = SDL_CreateTextureFromSurface(MenuRenderer, SettingBackSurface);
+    SDL_FreeSurface(SettingBackSurface);
+
+    VolumeSurface = IMG_Load("Textures\\Volume.bmp");
+    SDL_SetColorKey(VolumeSurface, SDL_TRUE, SDL_MapRGB(VolumeSurface->format, 255, 255, 255));
+    VolumeTexture = SDL_CreateTextureFromSurface(MenuRenderer, VolumeSurface);
+    SDL_FreeSurface(VolumeSurface);
+
+    VolumeONSurface = IMG_Load("Textures\\SoundON.bmp");
+    SDL_SetColorKey(VolumeONSurface, SDL_TRUE, SDL_MapRGB(VolumeONSurface->format, 255, 255, 255));
+    VolumeONTexture = SDL_CreateTextureFromSurface(MenuRenderer, VolumeONSurface);
+    SDL_FreeSurface(VolumeONSurface);
+
+    VolumeOFFSurface = IMG_Load("Textures\\SoundOFF.bmp");
+    SDL_SetColorKey(VolumeOFFSurface, SDL_TRUE, SDL_MapRGB(VolumeOFFSurface->format, 255, 255, 255));
+    VolumeOFFTexture = SDL_CreateTextureFromSurface(MenuRenderer, VolumeOFFSurface);
+    SDL_FreeSurface(VolumeOFFSurface);
+}
+//ЗАГРУЖАЕТ ТЕКСТУРЫ ГЛАВНОГО МЕНЮ
+
+
 int main(int argc, char** argv)
 {
     SDL_DisplayMode displayMode;
@@ -196,109 +326,51 @@ int main(int argc, char** argv)
     else {
         std::cout << SDL_GetNumRenderDrivers() << std::endl;
         SDL_Renderer* MenuRenderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED || SDL_RENDERER_PRESENTVSYNC);//acelerated - аппаратное ускорение, верт синхр.
-        
-        //Текстуры меню
-        SDL_Surface* FON = IMG_Load("Textures\\FON_MENU.bmp");
-        SDL_SetColorKey(FON, SDL_TRUE, SDL_MapRGB(FON->format, 255, 255, 255));
-        SDL_Texture* FON_TEXTURE = SDL_CreateTextureFromSurface(MenuRenderer, FON);
-        SDL_FreeSurface(FON);
-        SDL_Rect FON_RECT = { 0,0,1280,720 };
+        LoadTexturesMainMenu(MenuRenderer); // ЗАГРУЖАЕТ ТЕКСТУРЫ МЕНЮ
+        //РАСПОЛОЖЕНИЕ ТЕКСТУР И ОТРИСОВКА
+       
+        SDL_Rect FON_RECT = { 0,0,1280,720 }; //ФОН
         DrawTextureMenu(MenuRenderer, FON_TEXTURE, FON_RECT);
 
-
-        SDL_Surface* StartGame = IMG_Load("Textures\\Startgame.bmp");
-        SDL_SetColorKey(StartGame, SDL_TRUE, SDL_MapRGB(StartGame->format, 255, 255, 255));
-        SDL_Texture* StartGameTexture = SDL_CreateTextureFromSurface(MenuRenderer, StartGame);
-        SDL_FreeSurface(StartGame);
-        SDL_Rect StartGamePos = { 530,50,220,100 };
+        SDL_Rect StartGamePos = { 530,50,220,100 };//НАЧАТЬ ИГРУ РАСП
         DrawTextureMenu(MenuRenderer, StartGameTexture, StartGamePos);
 
-        SDL_Surface* TablRec = IMG_Load("Textures\\Achiv.bmp");
-        SDL_SetColorKey(TablRec, SDL_TRUE, SDL_MapRGB(TablRec->format, 255, 255, 255));
-        SDL_Texture* TablRecTexture = SDL_CreateTextureFromSurface(MenuRenderer, TablRec);
-        SDL_FreeSurface(TablRec);
-        SDL_Rect TablRecRect = { 530,160,220,100 };
+        SDL_Rect TablRecRect = { 530,160,220,100 }; 
         DrawTextureMenu(MenuRenderer, TablRecTexture, TablRecRect);
 
-        SDL_Surface* HELP = IMG_Load("Textures\\Help.bmp");
-        SDL_SetColorKey(HELP, SDL_TRUE, SDL_MapRGB(HELP->format, 255, 255, 255));
-        SDL_Texture* HELP_Texture = SDL_CreateTextureFromSurface(MenuRenderer, HELP);
-        SDL_FreeSurface(HELP);
         SDL_Rect HELP_RECT = { 530,270,220,100 };
         DrawTextureMenu(MenuRenderer, HELP_Texture, HELP_RECT);
 
-        SDL_Surface* CLOSE = IMG_Load("Textures\\Close Game.bmp");
-        SDL_SetColorKey(CLOSE, SDL_TRUE, SDL_MapRGB(CLOSE->format, 255, 255, 255));
-        SDL_Texture* CLOSE_Texture = SDL_CreateTextureFromSurface(MenuRenderer, CLOSE);
-        SDL_FreeSurface(CLOSE);
         SDL_Rect CLOSE_RECT = { 530,380,220,100 };
         DrawTextureMenu(MenuRenderer, CLOSE_Texture, CLOSE_RECT);
 
-        SDL_Surface* GOOD = IMG_Load("Textures\\YesACTIVE.bmp");
-        SDL_SetColorKey(GOOD, SDL_TRUE, SDL_MapRGB(GOOD->format, 255, 255, 255));
-        CloseGoodTexture = SDL_CreateTextureFromSurface(MenuRenderer, GOOD);
-        SDL_FreeSurface(GOOD);
         SDL_Rect GOOD_RECT = { 740,340,80,80 };
 
-        SDL_Surface* NO = IMG_Load("Textures\\UP_CLOSE.bmp");
-        SDL_SetColorKey(NO, SDL_TRUE, SDL_MapRGB(NO->format, 255, 255, 255));
-        NoCloseTexture = SDL_CreateTextureFromSurface(MenuRenderer, NO);
-        SDL_FreeSurface(NO);
         SDL_Rect NO_RECT = { 480,355,50,50 };
 
-        //Текстура прозрачности (Беление экрана)
-        SDL_Surface* WHITE = IMG_Load("Textures\\White.bmp");
-        SDL_SetColorKey(WHITE, SDL_TRUE, SDL_MapRGB(WHITE->format, 5, 5, 5));
-        SDL_Texture* WHITE_Texture = SDL_CreateTextureFromSurface(MenuRenderer, WHITE);
-        SDL_FreeSurface(WHITE);
         SDL_Rect WHITE_RECT = { 0,0,1280,720 };
 
-
-        SDL_Surface* SettingSurface = IMG_Load("Textures\\Settings.bmp");
-        SDL_SetColorKey(SettingSurface, SDL_TRUE, SDL_MapRGB(SettingSurface->format, 255, 255, 255));
-        SDL_Texture* SETTING_Texture = SDL_CreateTextureFromSurface(MenuRenderer, SettingSurface);
-        SDL_FreeSurface(SettingSurface);
         SDL_Rect SETTING_RECT = { 1280 - 70,0,70,70 };
         DrawTextureMenu(MenuRenderer, SETTING_Texture, SETTING_RECT);
 
-        SDL_Surface* SettingBackSurface = IMG_Load("Textures\\SettingsBack.bmp");
-        SDL_SetColorKey(SettingBackSurface, SDL_TRUE, SDL_MapRGB(SettingBackSurface->format, 255, 255, 255));
-        SDL_Texture* SETTING_Texture_Back = SDL_CreateTextureFromSurface(MenuRenderer, SettingBackSurface);
-        SDL_FreeSurface(SettingBackSurface);
         SDL_Rect SETTING_RECT_Back = { 330,110,600,600 };
 
-        SDL_Surface* VolumeSurface = IMG_Load("Textures\\Volume.bmp");
-        SDL_SetColorKey(VolumeSurface, SDL_TRUE, SDL_MapRGB(VolumeSurface->format, 255, 255, 255));
-        SDL_Texture* VolumeTexture = SDL_CreateTextureFromSurface(MenuRenderer, VolumeSurface);
-        SDL_FreeSurface(VolumeSurface);
-
-        SDL_Surface* VolumeONSurface = IMG_Load("Textures\\SoundON.bmp");
-        SDL_SetColorKey(VolumeONSurface, SDL_TRUE, SDL_MapRGB(VolumeONSurface->format, 255, 255, 255));
-        SDL_Texture* VolumeONTexture = SDL_CreateTextureFromSurface(MenuRenderer, VolumeONSurface);
-        SDL_FreeSurface(VolumeONSurface);
         SDL_Rect VolumeON_Rect = { 720,290,40,40 };
 
-        SDL_Surface* VolumeOFFSurface = IMG_Load("Textures\\SoundOFF.bmp");
-        SDL_SetColorKey(VolumeOFFSurface, SDL_TRUE, SDL_MapRGB(VolumeOFFSurface->format, 255, 255, 255));
-        SDL_Texture* VolumeOFFTexture = SDL_CreateTextureFromSurface(MenuRenderer, VolumeOFFSurface);
-        SDL_FreeSurface(VolumeOFFSurface);
         SDL_Rect VolumeOFF_Rect = { 475,290,40,40 };
 
         //FULLSCREENRECT
         SDL_Rect FULLSCREEN_RECT = { 720,353,30,30 };
 
-
-
-
         //ЗВУК
 
-        InitMusic();
-        PlayFonMusic();
-        Volume(100);
+        InitMusic(); //ИНИЦИАЛИЗАЦИЯ ЗВУКА
+        LoadSound(); //ЗАГРУЗКА ЗВУКА
+        PlayFonMusic(); //ФОНОВАЯ МУЗЫКА МЕНЮ (ВКЛЮЧАЕТ)
         //ТЕКСТ
 
         TTF_Init();
-        TTF_Font* font = TTF_OpenFont("Text.ttf", 24);
+        TTF_Font* font = TTF_OpenFont("Text.ttf", 24); //Шрифт при выходе
         TTF_Font* SettingFont = TTF_OpenFont("Text.ttf", 56);
         TTF_Font* SettingMenuFont = TTF_OpenFont("Text.ttf", 36);
 
@@ -356,7 +428,7 @@ int main(int argc, char** argv)
                 SDL_Delay(16);
             }
             if (MenuClose == true) {
-                SDL_SetTextureAlphaMod(WHITE_Texture, 4);
+                SDL_SetTextureAlphaMod(WHITE_Texture, 4);             //Полупрозрачность для менюшек
                 DrawTextureMenu(MenuRenderer, WHITE_Texture, WHITE_RECT);
                 DrawTextureMenu(MenuRenderer, CloseGoodTexture, GOOD_RECT);
                 DrawTextureMenu(MenuRenderer, NoCloseTexture, NO_RECT);
@@ -434,11 +506,7 @@ int main(int argc, char** argv)
             if (GameStartDiff == true) {
                 MenuDiff(MenuRenderer, GameStartDiff,MainMenu,LoadDiffTexture,event,window);
             }
-            
-
         }
-
-
         SDL_DestroyTexture(CLOSE_Texture);
         SDL_DestroyTexture(FON_TEXTURE);
         SDL_DestroyTexture(HELP_Texture);
@@ -450,6 +518,7 @@ int main(int argc, char** argv)
         SDL_DestroyWindow(window);
 
     }
+    _CrtDumpMemoryLeaks();
     return 0;
 
 }
