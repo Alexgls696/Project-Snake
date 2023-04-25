@@ -1,5 +1,9 @@
 #include "GameModEasy.h"
 
+
+TTF_Font* fontScore;
+TTF_Font* SnakeLenTTF;
+
 SDL_Texture* FON_EASY_TEXTURE = NULL;
 SDL_Surface* FON_EASY_SURFACE = NULL;
 SDL_Rect FON_EASY_RECT = { 280,0,720,720 };
@@ -14,6 +18,7 @@ SDL_Surface* KlubnicaSurface = NULL;
 SDL_Texture* KlubnicaTexture = NULL;
 
 SDL_Texture* ScoreTexture = NULL;
+SDL_Texture* LenSnakeTexture = NULL;
 
 const int WIDTH_EASY1 = 280;
 const int WIDTH_EASY2 = 960;
@@ -25,10 +30,42 @@ int xE = 600, yE = 720 / 2 - 40, fruitX, fruitY;
 int score = 0;
 
 bool GameOver = false;
+bool LoadTexturesEasyBool = true;
+bool chooseFood = true;
+bool Left = false, Right = false, Up = false, Down = false;//Направление змейки
+bool flagFruit = false;
+
 int SnakeX[324]; int SnakeY[324];
 int LenSnake = 1;
+int Food_Number;
+int randomFood;
+int SnakePosX[324]; int SnakePosY[324];
 
-void LoadTexturesEasy(SDL_Renderer*renderer) {
+
+enum Direction {
+	START = 0, LEFT, RIGHT, UP, DOWN
+};
+Direction Dir;
+
+SDL_Texture* Get_TextTextureEasy(SDL_Renderer*& renderer, char* text, TTF_Font* font) {
+	SDL_Surface* TextSurface = NULL;
+	SDL_Color fore_color = { 240,100,100 };
+	TextSurface = TTF_RenderUTF8_Solid(font, text, fore_color);
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, TextSurface);
+	SDL_FreeSurface(TextSurface);
+	return texture;
+}
+
+SDL_Texture* Get_SnakeLenTexture(SDL_Renderer* renderer, char* text, TTF_Font* font) {
+	SDL_Surface* Surface = NULL;
+	SDL_Color fore_color = { 240,100,100 };
+	Surface = TTF_RenderUTF8_Solid(font, text, fore_color);
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, Surface);
+	SDL_FreeSurface(Surface);
+	return texture;
+}
+
+void LoadTexturesEasy(SDL_Renderer* renderer) {
 
 	FON_EASY_SURFACE = IMG_Load("Textures\\EASY_FON.bmp");
 	SDL_SetColorKey(FON_EASY_SURFACE, SDL_TRUE, SDL_MapRGB(FON_EASY_SURFACE->format, 255, 255, 255));
@@ -71,53 +108,53 @@ void SetkaEasy(SDL_Renderer* renderer) {
 		SDL_RenderDrawLine(renderer, 280, i, 1000, i);
 	}
 }
-SDL_Texture* Get_TextTextureEasy(SDL_Renderer*& renderer, char* text, TTF_Font* font) {
-	SDL_Surface* TextSurface = NULL;
-	SDL_Color fore_color = { 240,100,100 };
-	SDL_Color back_color = { 255,20,20,255 };
-	TextSurface = TTF_RenderUTF8_Solid(font, text, fore_color);
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, TextSurface);
-	SDL_FreeSurface(TextSurface);
-	return texture;
-}
 
-enum Direction {
-	START = 0, LEFT, RIGHT, UP, DOWN
-};
-Direction Dir;
-
-bool flagFruit = false;
 void FruitSpawn() {
-	while (flagFruit == false) {
+	
+	while (!flagFruit) {
+		int c = 0;
 		fruitX = rand() % (WIDTH_EASY2 - WIDTH_EASY1 + 1) + WIDTH_EASY1;
 		fruitY = rand() % (HEIGHT_EASY2 - HEIGHT_EASY1 + 1) + HEIGHT_EASY1;
 		if (fruitX % 40 == 0 && fruitY % 40 == 0) {
-			flagFruit = true;
+			for (int i = 0; i < LenSnake;i++) {
+				if (fruitX == SnakePosX[i] && fruitY == SnakePosY[i]) {
+					c++;
+				}
+			}
+			if (c == 0) {
+				flagFruit = true;
+			}
+			else
+				continue;
 		}
 	}
 }
 
-string Food[3];
-int Food_Number;
-int randomFood;
-bool chooseFood = true;
-
-TTF_Font* fontScore;
-void RenderGame(SDL_Renderer*RenderGame) {
+void RenderGame(SDL_Renderer* RenderGame) {
 	fontScore = TTF_OpenFont("FontScore.ttf", 54);
+	SnakeLenTTF = TTF_OpenFont("FontScore.ttf", 48);
 	string text = u8"Счёт ";
+	string LenSnText = u8"Длина змейки ";
+
+	string LenSn = to_string(LenSnake);
+	LenSnText = LenSnText + LenSn;
+
 	string scoreOne = to_string(score);
 	text = text + scoreOne;
 
+	char LenSnakeChar[35];
 	char textScore[15];
-	strcpy_s(textScore,text.c_str()); //Преобразование из string в char*
-	SDL_Rect TextRect = { 10,5,150,70 };
-
-	ScoreTexture = Get_TextTextureEasy(RenderGame,textScore, fontScore);
 	
-	Food[0] = "Яблоко";
-	Food[1] = "Клубника";
-	Food[2] = "Банан";
+	strcpy_s(textScore, text.c_str()); //Преобразование из string в char*
+	strcpy_s(LenSnakeChar, LenSnText.c_str());
+
+	SDL_Rect TextRect = { 10,5,150,70 };
+	SDL_Rect TextLenSnake = { 10,80,250,70 };
+
+
+	ScoreTexture = Get_TextTextureEasy(RenderGame, textScore, fontScore);
+	LenSnakeTexture = Get_SnakeLenTexture(RenderGame, LenSnakeChar, SnakeLenTTF);
+
 	if (chooseFood == true) {//Шансы появления еды определенного типа
 		randomFood = rand() % 100;
 		if (randomFood < 50)
@@ -132,6 +169,7 @@ void RenderGame(SDL_Renderer*RenderGame) {
 	SDL_RenderClear(RenderGame);
 	SDL_RenderCopy(RenderGame, FON_EASY_TEXTURE, NULL, &FON_EASY_RECT);
 	SDL_RenderCopy(RenderGame, ScoreTexture, NULL, &TextRect);
+	SDL_RenderCopy(RenderGame, LenSnakeTexture, NULL, &TextLenSnake);
 
 	SDL_SetRenderDrawColor(RenderGame, 195, 195, 195, 0);
 	SetkaEasy(RenderGame);                    //Можно включить по желанию
@@ -140,7 +178,9 @@ void RenderGame(SDL_Renderer*RenderGame) {
 
 	SDL_Rect CRAY = { 279,0,722,720 };
 	SDL_RenderDrawRect(RenderGame, &CRAY);
-
+	for (int i = 0; i < LenSnake;i++)
+		cout << SnakePosX[i] << " " << SnakePosY[i] << endl;
+	cout << "-------" << endl;
 	for (int x = 280; x < 1000;x += 40) {
 		for (int y = 0; y < 720; y += 40) {
 			if (x == xE && y == yE) {
@@ -149,7 +189,7 @@ void RenderGame(SDL_Renderer*RenderGame) {
 			}
 			if (x == fruitX && y == fruitY) {
 				SDL_Rect Rect = { fruitX,fruitY,40,40 };
-				if(Food_Number==0)
+				if (Food_Number == 0)
 					SDL_RenderCopy(RenderGame, AppleTexture, NULL, &Rect);
 				if (Food_Number == 1)
 					SDL_RenderCopy(RenderGame, KlubnicaTexture, NULL, &Rect);
@@ -164,12 +204,9 @@ void RenderGame(SDL_Renderer*RenderGame) {
 				}
 
 			}
-
 		}
-		
 	}
 }
-
 
 void Activity(SDL_Event event) {
 
@@ -177,23 +214,21 @@ void Activity(SDL_Event event) {
 		case SDL_KEYDOWN:
 			switch (event.key.keysym.sym) {
 			case SDLK_a:
-				if(Dir!=RIGHT)          // ВЛЕВО
-				Dir = LEFT; break;
-			case SDLK_w: 
-				if(Dir != DOWN)         // ВВЕРХ
-				Dir = UP; break;
+				if (Dir != RIGHT)          // ВЛЕВО
+					Dir = LEFT; break;
+			case SDLK_w:
+				if (Dir != DOWN)         // ВВЕРХ
+					Dir = UP; break;
 			case SDLK_d:                // ВПРАВО
-				if(Dir != LEFT)
-				Dir = RIGHT; break;
+				if (Dir != LEFT)
+					Dir = RIGHT; break;
 			case SDLK_s:                // ВНИЗ
-				if (Dir != UP)         
-				Dir = DOWN; break;
+				if (Dir != UP)
+					Dir = DOWN; break;
 			case SDLK_ESCAPE:
 				cout << "Escape was pressed" << endl; break;
 			}
 }
-
-bool Left = false, Right = false, Up = false, Down = false;
 
 void GameLogicEasy() {
 	int LastX = SnakeX[0], LastY = SnakeY[0];
@@ -208,35 +243,36 @@ void GameLogicEasy() {
 		SnakeY[i] = LastY;
 		LastX = LastXX;
 		LastY = LastYY;
+		SnakePosX[i] = LastX; //Запомнить координаты змейки и занести из в массив
+		SnakePosY[i] = LastY;
 	}
-	
-		switch (Dir) {
-		case LEFT:      // ВЛЕВО
-			Left = true;
-			Right = false;
-			Down = false;
-			Up = false;
-			break;
-			cout << "OK" << endl;
-		case UP:      // ВВЕРХ
-			Left = false;
-			Right = false;
-			Down = false;
-			Up = true;
-			break;
-		case RIGHT:      // ВПРАВО
-			Left = false;
-			Right = true;
-			Down = false;
-			Up = false
-				; break;
-		case DOWN:      // ВНИЗ
-			Left = false;
-			Right = false;
-			Down = true;
-			Up = false;
-			break;
-		}
+	switch (Dir) {
+	case LEFT:      // ВЛЕВО
+		Left = true;
+		Right = false;
+		Down = false;
+		Up = false;
+		break;
+		cout << "OK" << endl;
+	case UP:      // ВВЕРХ
+		Left = false;
+		Right = false;
+		Down = false;
+		Up = true;
+		break;
+	case RIGHT:      // ВПРАВО
+		Left = false;
+		Right = true;
+		Down = false;
+		Up = false
+			; break;
+	case DOWN:      // ВНИЗ
+		Left = false;
+		Right = false;
+		Down = true;
+		Up = false;
+		break;
+	}
 	if (Right == true)
 		xE += 40;
 	if (Left == true)
@@ -253,7 +289,7 @@ void GameLogicEasy() {
 			score += 2;
 		if (Food_Number == 2)
 			score += 3;
-		
+
 		fruitX = 0;
 		fruitY = 0;
 		LenSnake++;
@@ -273,21 +309,20 @@ void GameLogicEasy() {
 	}
 }
 
-bool LoadTexturesEasyBool = true;
 
 //_______________________________________________________________________________
 clock_t start = clock();    //Необходим для отвязки FPS приложения от игры!!!!!!!
 //_______________________________________________________________________________
 
 
-void EasyMode(SDL_Renderer* renderer, SDL_Event event,bool &Easy,bool &StartGame) {
-	if (LoadTexturesEasyBool == true) {
+void EasyMode(SDL_Renderer* renderer, SDL_Event event, bool& Easy, bool& StartGame) {
+	if (LoadTexturesEasyBool) {
 		LoadTexturesEasy(renderer);
 		Dir = START;
 		LoadTexturesEasyBool = false;
 		PlayEasySound();
 	}
-	if (GameOver == false) {
+	if (!GameOver) {
 		Activity(event);
 		if (clock() - start >= 500) { //Обновление рендера игры
 			FruitSpawn();
@@ -295,25 +330,25 @@ void EasyMode(SDL_Renderer* renderer, SDL_Event event,bool &Easy,bool &StartGame
 			RenderGame(renderer);
 			start = clock();
 			SDL_RenderPresent(renderer);
-		}	
+		}
 	}
 	else {
 		Easy = false;
 		StartGame = false;
 		GameOver = false;
 		LoadTexturesEasyBool = true;
+		Dir = START;
+
 		score = 0;
 		xE = 600, yE = 720 / 2 - 40;
-		
+
 		DeleteTexturesEasy();
 		PlayFonMusic();
 		for (int i = 0; i < LenSnake;i++)
 		{
 			SnakeX[i] = 0; SnakeY[i] = 0;
 		}
-			LenSnake = 1;
+		LenSnake = 1;
 	}
-	
 	SDL_Delay(16);
-
 }
