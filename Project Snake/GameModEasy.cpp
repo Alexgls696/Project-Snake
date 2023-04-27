@@ -1,4 +1,5 @@
 #include "GameModEasy.h"
+#include "GameSetting.h"
 
 //ЗАГРУЗКА ТЕКСТУР----------------------------------------------------------------
 TTF_Font* fontScore = NULL;
@@ -34,6 +35,7 @@ bool LoadTexturesEasyBool = true;
 bool chooseFood = true;
 bool Left = false, Right = false, Up = false, Down = false;//Направление змейки
 bool flagFruit = false;//Проверка возможного спавна еды
+bool Setting = false;
 
 int SnakeX[324]; int SnakeY[324];  //МАССИВЫ, хранящие координаты змейки. Реализация - Связные списки.
 int LenSnake = 1;
@@ -214,7 +216,7 @@ void RenderGame(SDL_Renderer* RenderGame) {
 	}
 }
 
-void Activity(SDL_Event event) {
+void Activity(SDL_Event event,bool &Setting) {
 
 	switch (event.type)
 		case SDL_KEYDOWN:
@@ -232,6 +234,7 @@ void Activity(SDL_Event event) {
 				if (Dir != UP)
 					Dir = DOWN; break;
 			case SDLK_ESCAPE:
+				Setting = true;
 				cout << "Escape was pressed" << endl; break;
 			}
 }
@@ -319,45 +322,51 @@ clock_t start = clock();    //Необходим для отвязки FPS приложения от игры!!!!!!
 
 
 void EasyMode(SDL_Renderer* renderer, SDL_Event event, bool& Easy, bool& StartGame) {
-	if (LoadTexturesEasyBool) { //ТО, ЧТО НУЖНО ЗАГРУЗИТЬ 1 РАЗ
-		LoadTexturesEasy(renderer);
-		Dir = START;
-		PlayEasySound();
-		fontScore = TTF_OpenFont("FontScore.ttf", 54);
-		SnakeLenTTF = TTF_OpenFont("FontScore.ttf", 48);
-		LoadTexturesEasyBool = false;
-	}
-	if (!GameOver) {
-		Activity(event);
-		if (clock() - start >= 500) { //Обновление рендера игры
-			FruitSpawn();
-			GameLogicEasy();
-			RenderGame(renderer);
-			start = clock();
-			SDL_RenderPresent(renderer);
+	if (!Setting) {
+		if (LoadTexturesEasyBool) { //ТО, ЧТО НУЖНО ЗАГРУЗИТЬ 1 РАЗ
+			LoadTexturesEasy(renderer);
+			Dir = START;
+			PlayEasySound();
+			fontScore = TTF_OpenFont("FontScore.ttf", 54);
+			SnakeLenTTF = TTF_OpenFont("FontScore.ttf", 48);
+			LoadTexturesEasyBool = false;
 		}
+		if (!GameOver) {
+			Activity(event,Setting);
+			if (clock() - start >= 500) { //Обновление рендера игры
+				FruitSpawn();
+				GameLogicEasy();
+				RenderGame(renderer);
+				start = clock();
+				SDL_RenderPresent(renderer);
+			}
+		}
+		else {
+			Easy = false;
+			StartGame = false;
+			Right = false;
+			Left = false;
+			Down = false;
+			Up = false;
+			GameOver = false;
+			LoadTexturesEasyBool = true;
+			Dir = START;
+
+			score = 0;
+			xE = 600, yE = 720 / 2 - 40;
+
+			DeleteTexturesEasy();
+			PlayFonMusic();
+			for (int i = 0; i < LenSnake; i++)
+			{
+				SnakeX[i] = 0; SnakeY[i] = 0;
+			}
+			LenSnake = 1;
+		}
+		
 	}
 	else {
-		Easy = false;
-		StartGame = false;
-		Right = false;
-		Left = false;
-		Down = false;
-		Up = false;
-		GameOver = false;
-		LoadTexturesEasyBool = true;
-		Dir = START;
-
-		score = 0;
-		xE = 600, yE = 720 / 2 - 40;
-
-		DeleteTexturesEasy();
-		PlayFonMusic();
-		for (int i = 0; i < LenSnake;i++)
-		{
-			SnakeX[i] = 0; SnakeY[i] = 0;
-		}
-		LenSnake = 1;
+		GameSettings(renderer, event, Setting);
 	}
 	SDL_Delay(16);
 }
