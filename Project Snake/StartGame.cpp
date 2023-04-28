@@ -115,7 +115,6 @@ void MenuDiff(SDL_Renderer* renderer, bool& FlagDiffMenu, bool& MainMenu, bool& 
 		SDL_DestroyTexture(BackUpTexture);
 		SDL_DestroyTexture(FONTexture);
 
-
 		MainMenu = true;
 		LoadTexture = true;
 		FlagDiffMenu = false;

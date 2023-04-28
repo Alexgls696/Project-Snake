@@ -2,6 +2,7 @@
 #include "GameSetting.h"
 
 //ЗАГРУЗКА ТЕКСТУР----------------------------------------------------------------
+
 TTF_Font* fontScore = NULL;
 TTF_Font* SnakeLenTTF = NULL;
 
@@ -17,6 +18,9 @@ SDL_Texture* KlubnicaTexture = NULL;
 
 SDL_Texture* ScoreTexture = NULL;
 SDL_Texture* LenSnakeTexture = NULL;
+
+SDL_Surface* MenuIconSurface = NULL;
+SDL_Texture* MenuIconTexture = NULL;
 
 //-------------------------------------------------------------------------------
 const int WIDTH_EASY1 = 280; // ИГРОВОЕ ПОЛЕ
@@ -35,7 +39,10 @@ bool LoadTexturesEasyBool = true;
 bool chooseFood = true;
 bool Left = false, Right = false, Up = false, Down = false;//Направление змейки
 bool flagFruit = false;//Проверка возможного спавна еды
-bool Setting = false;
+
+bool Pause = false;
+bool Restart = false;// Рестарт игры
+bool BackToMenu = false;
 
 int SnakeX[324]; int SnakeY[324];  //МАССИВЫ, хранящие координаты змейки. Реализация - Связные списки.
 int LenSnake = 1;
@@ -53,7 +60,7 @@ char textScore[15];
 SDL_Rect TextRect = { 10,5,150,70 }; // Счет
 SDL_Rect TextLenSnake = { 10,80,250,70 }; // длина змейки
 SDL_Rect CRAY = { 279,0,722,720 }; //Красные границы
-
+//SDL_Rect 
 
 enum Direction {
 	START = 0, LEFT, RIGHT, UP, DOWN
@@ -99,6 +106,11 @@ void LoadTexturesEasy(SDL_Renderer* renderer) {
 	SDL_SetColorKey(KlubnicaSurface, SDL_TRUE, SDL_MapRGB(KlubnicaSurface->format, 255, 255, 255));
 	KlubnicaTexture = SDL_CreateTextureFromSurface(renderer, KlubnicaSurface);
 	SDL_FreeSurface(KlubnicaSurface);
+
+	MenuIconSurface = IMG_Load("Textures\\MENU_ICON.bmp");
+	SDL_SetColorKey(MenuIconSurface, SDL_TRUE, SDL_MapRGB(MenuIconSurface->format, 255, 255, 255));
+	MenuIconTexture = SDL_CreateTextureFromSurface(renderer, MenuIconSurface);
+	SDL_FreeSurface(MenuIconSurface);
 
 }
 
@@ -322,7 +334,7 @@ clock_t start = clock();    //Необходим для отвязки FPS приложения от игры!!!!!!
 
 
 void EasyMode(SDL_Renderer* renderer, SDL_Event event, bool& Easy, bool& StartGame) {
-	if (!Setting) {
+	if (!Pause) {
 		if (LoadTexturesEasyBool) { //ТО, ЧТО НУЖНО ЗАГРУЗИТЬ 1 РАЗ
 			LoadTexturesEasy(renderer);
 			Dir = START;
@@ -331,9 +343,10 @@ void EasyMode(SDL_Renderer* renderer, SDL_Event event, bool& Easy, bool& StartGa
 			SnakeLenTTF = TTF_OpenFont("FontScore.ttf", 48);
 			LoadTexturesEasyBool = false;
 		}
-		if (!GameOver) {
-			Activity(event,Setting);
-			if (clock() - start >= 500) { //Обновление рендера игры
+		if (!GameOver) //ОСНОВНАЯ ЧАСТЬ ИГРЫ
+		{
+			Activity(event,Pause);
+			if (clock() - start >= 500) { //Обновление рендера игры - КОНТРОЛЬ СКОРОСТИ
 				FruitSpawn();
 				GameLogicEasy();
 				RenderGame(renderer);
@@ -341,7 +354,8 @@ void EasyMode(SDL_Renderer* renderer, SDL_Event event, bool& Easy, bool& StartGa
 				SDL_RenderPresent(renderer);
 			}
 		}
-		else {
+		else //ЕСЛИ ПРОИГРЫШ
+		{
 			Easy = false;
 			StartGame = false;
 			Right = false;
@@ -354,7 +368,7 @@ void EasyMode(SDL_Renderer* renderer, SDL_Event event, bool& Easy, bool& StartGa
 
 			score = 0;
 			xE = 600, yE = 720 / 2 - 40;
-
+			
 			DeleteTexturesEasy();
 			PlayFonMusic();
 			for (int i = 0; i < LenSnake; i++)
@@ -365,8 +379,54 @@ void EasyMode(SDL_Renderer* renderer, SDL_Event event, bool& Easy, bool& StartGa
 		}
 		
 	}
-	else {
-		GameSettings(renderer, event, Setting);
+	else //ЕСЛИ НАЖАТА КЛАВИША НАСТРОЕК
+	{
+		GameSettings(renderer, event, Pause,Restart,BackToMenu);
+	}
+	if (Restart) //ПЕРЕЗАПУСК УРОВНЯ
+	{
+		Easy = true;
+		Right = false;
+		Left = false;
+		Down = false;
+		Up = false;
+		GameOver = false;
+		Dir = START;
+		LoadTexturesEasyBool = false;
+		score = 0;
+		xE = 600, yE = 720 / 2 - 40;
+
+		for (int i = 0; i < LenSnake; i++)
+		{
+			SnakeX[i] = 0; SnakeY[i] = 0;
+		}
+		LenSnake = 1;
+		Restart = false;
+		EasyMode(renderer, event, Easy, StartGame);
+	}
+	if (BackToMenu) //ЕСЛИ БЫЛ ВОЗВРАТ В ГЛАВНОЕ МЕНЮ
+	{
+		Easy = false;
+		StartGame = false;
+		Right = false;
+		Left = false;
+		Down = false;
+		Up = false;
+		GameOver = false;
+		LoadTexturesEasyBool = true;
+		Dir = START;
+
+		score = 0;
+		xE = 600, yE = 720 / 2 - 40;
+
+		DeleteTexturesEasy();
+		PlayFonMusic();
+		for (int i = 0; i < LenSnake; i++)
+		{
+			SnakeX[i] = 0; SnakeY[i] = 0;
+		}
+		LenSnake = 1;
+		BackToMenu = false;
 	}
 	SDL_Delay(16);
 }

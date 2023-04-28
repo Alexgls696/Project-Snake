@@ -2,7 +2,7 @@
 
 Mix_Chunk* Tap = NULL;
 Mix_Music* Ambient = NULL;
-Mix_Music*LevelEasy = NULL;
+Mix_Music* LevelEasy = NULL;
 Mix_Chunk* UKUS = NULL;
 
 void Volume(int volume) {

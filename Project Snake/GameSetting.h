@@ -7,6 +7,6 @@
 
 using namespace std;
 
-void GameSettings(SDL_Renderer* renderer, SDL_Event event, bool& SettingOn);
+void GameSettings(SDL_Renderer* renderer, SDL_Event event, bool& Pause,bool&Restart,bool&BackToMenu);
 
 
