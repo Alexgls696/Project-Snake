@@ -109,13 +109,14 @@ void GameSettings(SDL_Renderer* renderer, SDL_Event event, bool& Pause,bool&Rest
 			countRepeat = 1;
 			return;
 		}
-		if (BackMenuHit) {
+		if (BackMenuHit(x,y)){
 			Pause = false;
 			BackToMenu = true;
 			DeleteTexturesGameMenu();
 			countRepeat = 1;
 			return;
 		}
+		
 	}
 
 	DrawGameMenuTexture(renderer);

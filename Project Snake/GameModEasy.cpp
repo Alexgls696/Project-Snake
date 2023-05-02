@@ -22,6 +22,9 @@ SDL_Texture* LenSnakeTexture = NULL;
 SDL_Surface* MenuIconSurface = NULL;
 SDL_Texture* MenuIconTexture = NULL;
 
+SDL_Surface* to_menuSurface = NULL;
+SDL_Texture * to_menuTexture = NULL;
+
 //-------------------------------------------------------------------------------
 const int WIDTH_EASY1 = 280; // ИГРОВОЕ ПОЛЕ
 const int WIDTH_EASY2 = 960;
@@ -60,6 +63,7 @@ char textScore[15];
 SDL_Rect TextRect = { 10,5,150,70 }; // Счет
 SDL_Rect TextLenSnake = { 10,80,250,70 }; // длина змейки
 SDL_Rect CRAY = { 279,0,722,720 }; //Красные границы
+SDL_Rect TO_MENU_RECT = { 1230,0,50,50 };
 //SDL_Rect 
 
 enum Direction {
@@ -112,6 +116,11 @@ void LoadTexturesEasy(SDL_Renderer* renderer) {
 	MenuIconTexture = SDL_CreateTextureFromSurface(renderer, MenuIconSurface);
 	SDL_FreeSurface(MenuIconSurface);
 
+	to_menuSurface = IMG_Load("Textures\\MENU_ICON.bmp");
+	SDL_SetColorKey(to_menuSurface, SDL_TRUE, SDL_MapRGB(to_menuSurface->format, 255, 255, 255));
+	to_menuTexture = SDL_CreateTextureFromSurface(renderer, to_menuSurface);
+	SDL_FreeSurface(to_menuSurface);
+
 }
 
 void DeleteTexturesEasy() {
@@ -132,7 +141,7 @@ void SetkaEasy(SDL_Renderer* renderer) {
 	}
 }
 
-int c; // Переменная - проверка  - счетчик
+int c; // Переменная - проверка  - счетчик ДЛЯ ПОЯВЛЕНИЯ ФРУКТОВ
 
 void FruitSpawn() {
 	
@@ -142,7 +151,7 @@ void FruitSpawn() {
 		fruitY = rand() % (HEIGHT_EASY2 - HEIGHT_EASY1 + 1) + HEIGHT_EASY1;
 		if (fruitX % 40 == 0 && fruitY % 40 == 0) {
 			for (int i = 0; i < LenSnake;i++) {
-				if ((fruitX == SnakePosX[i] && fruitY == SnakePosY[i])||(TempFruitX==fruitX&&TempFruitY==fruitY)) { // Проверка наложения на змейку и на место, где фрукт был в прошлый раз
+				if ((fruitX == SnakePosX[i] && fruitY == SnakePosY[i])||(TempFruitX==fruitX&&TempFruitY==fruitY)) { // Проверка неналожения на змейку и на место, где фрукт был в прошлый раз
 					c++;
 				}
 			}
@@ -160,8 +169,8 @@ void FruitSpawn() {
 void RenderGame(SDL_Renderer* RenderGame) {
 	
 
-	text = u8"Счёт ";
-	LenSnText = u8"Длина змейки ";
+	text = u8"Счёт: ";
+	LenSnText = u8"Длина змейки: ";
 
 	LenSn = to_string(LenSnake);
 	LenSnText = LenSnText + LenSn;
@@ -185,10 +194,11 @@ void RenderGame(SDL_Renderer* RenderGame) {
 			Food_Number = 2;
 		chooseFood = false;
 	}
-	SDL_SetRenderDrawColor(RenderGame, 201, 201, 201, 0);
+	SDL_SetRenderDrawColor(RenderGame, 201, 201, 201, 0);//ЦВЕТ ПОЛЯ
 	SDL_RenderClear(RenderGame);
-	SDL_RenderCopy(RenderGame, ScoreTexture, NULL, &TextRect);
-	SDL_RenderCopy(RenderGame, LenSnakeTexture, NULL, &TextLenSnake);
+	SDL_RenderCopy(RenderGame, ScoreTexture, NULL, &TextRect); //ОТРИСОВКА СЧЕТА
+	SDL_RenderCopy(RenderGame, LenSnakeTexture, NULL, &TextLenSnake);//ОТРИСОВКА ДЛИНЫ ЗМЕЙКИ
+	SDL_RenderCopy(RenderGame, to_menuTexture, NULL, &TO_MENU_RECT);//ОТРИСОВКА ИКОНКИ МЕНЮ
 
 	SDL_DestroyTexture(LenSnakeTexture); // ДЛЯ ОСВОБОЖДЕНИЯ ПАМЯТИ
 	SDL_DestroyTexture(ScoreTexture); // ДЛЯ ОСВОБОЖДЕНИЯ ПАМЯТИ
@@ -228,8 +238,10 @@ void RenderGame(SDL_Renderer* RenderGame) {
 	}
 }
 
-void Activity(SDL_Event event,bool &Setting) {
-
+void Activity(SDL_Event event,bool &Pause) //КНОПКИ И МЫШЬ
+{
+	int x, y;
+	SDL_GetMouseState(&x, &y);
 	switch (event.type)
 		case SDL_KEYDOWN:
 			switch (event.key.keysym.sym) {
@@ -246,9 +258,14 @@ void Activity(SDL_Event event,bool &Setting) {
 				if (Dir != UP)
 					Dir = DOWN; break;
 			case SDLK_ESCAPE:
-				Setting = true;
+				Pause = true;
 				cout << "Escape was pressed" << endl; break;
 			}
+			if((event.type == SDL_MOUSEBUTTONDOWN)&&(event.button.button == SDL_BUTTON_LEFT))
+				if (x >= 1230 && x <= 1280 && y >= 0 && y <= 50) //НАЖАТИЕ НА ИКОНКУ ПАУЗЫ
+				{
+					Pause = true;
+				}
 }
 
 void GameLogicEasy() {
@@ -339,8 +356,8 @@ void EasyMode(SDL_Renderer* renderer, SDL_Event event, bool& Easy, bool& StartGa
 			LoadTexturesEasy(renderer);
 			Dir = START;
 			PlayEasySound();
-			fontScore = TTF_OpenFont("FontScore.ttf", 54);
-			SnakeLenTTF = TTF_OpenFont("FontScore.ttf", 48);
+			fontScore = TTF_OpenFont("Text.ttf", 54);
+			SnakeLenTTF = TTF_OpenFont("Text.ttf", 48);
 			LoadTexturesEasyBool = false;
 		}
 		if (!GameOver) //ОСНОВНАЯ ЧАСТЬ ИГРЫ
@@ -402,6 +419,7 @@ void EasyMode(SDL_Renderer* renderer, SDL_Event event, bool& Easy, bool& StartGa
 		}
 		LenSnake = 1;
 		Restart = false;
+		PlayEasySound();
 		EasyMode(renderer, event, Easy, StartGame);
 	}
 	if (BackToMenu) //ЕСЛИ БЫЛ ВОЗВРАТ В ГЛАВНОЕ МЕНЮ

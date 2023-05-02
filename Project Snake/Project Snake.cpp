@@ -196,7 +196,7 @@ bool SoundONTexture(int& x, int y, int& Value) {
 }
 
 bool FullScreenMode(int x, int y) {
-    if ((x >= 720 && x <= 750) && (y >= 353 && y <= 383))
+    if ((x >= 720 && x <= 750) && (y >= 350 && y <= 380))
         return true;
     return false;
 }
@@ -337,36 +337,31 @@ int main(int argc, char** argv)
 
         SDL_Rect StartGamePos = { 530,150,220,100 };//НАЧАТЬ ИГРУ РАСП
 
-        SDL_Rect TablRecRect = { 530,260,220,100 };
+        SDL_Rect TablRecRect = { 530,260,220,100 };//ТАБЛИЦА РЕКОРДОВ РАСПОЛОЖЕНИЕ
 
-        SDL_Rect HELP_RECT = { 530,370,220,100 };
+        SDL_Rect HELP_RECT = { 530,370,220,100 };//СПРАВКА
 
-        SDL_Rect CLOSE_RECT = { 530,480,220,100 };
+        SDL_Rect CLOSE_RECT = { 530,480,220,100 };//МЕНЮ ЗАКРЫТИЯ
 
-        SDL_Rect GOOD_RECT = { 740,340,80,80 };
+        SDL_Rect GOOD_RECT = { 740,340,80,80 }; //ЗАКРЫТИЕ
 
-        SDL_Rect NO_RECT = { 480,355,50,50 };
+        SDL_Rect NO_RECT = { 480,355,50,50 };//ОТМЕНА закрытия
 
-        SDL_Rect WHITE_RECT = { 0,0,1280,720 };
+        SDL_Rect WHITE_RECT = { 0,0,1280,720 }; //БЕЛЕНИЕ ФОНА НА ВЕСЬ ЭКРАН
 
-        SDL_Rect SETTING_RECT = { 1280 - 70,0,70,70 };
+        SDL_Rect SETTING_RECT = { 1280 - 70,0,70,70 }; //РАСПОЛОЖЕНИЕ КНОПКИ НАСТРОЕК
 
-        SDL_Rect SETTING_RECT_Back = { 330,110,600,600 };
-
+        SDL_Rect SETTING_RECT_Back = { 330,110,600,600 }; // ЗАДНИЙ ФОН МЕНЮ НАСТРОЕК
+         
         SDL_Rect VolumeON_Rect = { 720,290,40,40 };
 
         SDL_Rect VolumeOFF_Rect = { 475,290,40,40 };
 
-        SDL_Rect NameRect = { 300,10,600,150 }; // ПОЗИЦИЯ НАЗВАНИЯ
+        SDL_Rect NameRect = { 300,0,600,150 }; // ПОЗИЦИЯ НАЗВАНИЯ
         //--------------------------------------------------------------
 
-
-
-
-
-
         //FULLSCREENRECT
-        SDL_Rect FULLSCREEN_RECT = { 720,353,30,30 };
+        SDL_Rect FULLSCREEN_RECT = { 720,350,30,30 };
 
         //ЗВУК
 
@@ -391,7 +386,7 @@ int main(int argc, char** argv)
 
 
         bool quit = false;
-        SDL_Event event;
+   
         int x, y;
         int X_Volume = 700;
         bool MenuClose = false;
@@ -402,8 +397,9 @@ int main(int argc, char** argv)
         bool LoadDiffTexture = true;
         int Count = 0;
 
-        clock_t time = clock();
-
+        clock_t time = clock(); //Таймер вращения (СКОРОСТЬ)
+        clock_t ESCAPE = clock();//ТАЙМЕР нажатия ESCAPE
+        SDL_Event event;
         int i = 0;
         while (!quit) {
             SDL_PollEvent(&event);
@@ -420,9 +416,7 @@ int main(int argc, char** argv)
                 DrawTextureMenu(MenuRenderer, TablRecTexture, TablRecRect);
                 DrawTextureMenu(MenuRenderer, HELP_Texture, HELP_RECT);
                 DrawTextureMenu(MenuRenderer, CLOSE_Texture, CLOSE_RECT);
-                //DrawTextureMenu(MenuRenderer, SETTING_Texture, SETTING_RECT);
                 DrawTextureMenu(MenuRenderer, NameTexture, NameRect);
-
 
                 if ((event.type == SDL_MOUSEBUTTONDOWN) && (event.button.button == SDL_BUTTON_LEFT)) {
                     if (CloseFunction(event.button.x, event.button.y)) {
@@ -436,11 +430,15 @@ int main(int argc, char** argv)
                     Tap(MenuRenderer, x, y, GameStartDiff, MainMenu);
                     continue;
                 }
-               //ВРАЩЕНИЕ ШЕСТЕРНИ - НАСТРОЙКИ
+               //ВРАЩЕНИЕ ШЕСТЕРЕНКИ НАСТРОЕК - НАСТРОЙКИ
                 if (clock() - time >= 1) {
                     i += 30;
-                    SDL_RenderCopyEx(MenuRenderer, SETTING_Texture, NULL, &SETTING_RECT, i * (3.14 / 180), 0, SDL_FLIP_NONE);
+                    SDL_RenderCopyEx(MenuRenderer, SETTING_Texture, NULL, &SETTING_RECT, i * (3.14 / 180), 0, SDL_FLIP_NONE); //ОТОБРАЖЕНИЕ ВРАЩЕНИЯ
                     time = clock();
+                }
+                if ((event.key.keysym.sym==SDLK_ESCAPE)){
+                    MenuClose = true;
+                    MainMenu = false;
                 }
                 
                 SDL_RenderPresent(MenuRenderer);
@@ -465,6 +463,7 @@ int main(int argc, char** argv)
                         TapSound();
                     }
                 }
+               
                 SDL_RenderPresent(MenuRenderer);
                 SDL_Delay(16);
             }
@@ -480,6 +479,7 @@ int main(int argc, char** argv)
                 for (int i = 0; i < 3;i++) {
                     SDL_RenderDrawLine(MenuRenderer, 520, 308 + i, 710, 308 + i);
                 }
+
                 DrawSettingsMenuText(MenuRenderer, SettingMenuTexture);
                 DrawFullsreenSettingsMenuText(MenuRenderer, FullscreenTexture);
                 SDL_Rect CloseRect = { 860,140,40,40 };

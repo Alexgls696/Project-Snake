@@ -132,6 +132,7 @@
     <ClCompile Include="StartGame.cpp" />
     <ClCompile Include="Project Snake.cpp" />
     <ClCompile Include="Sound.cpp" />
+    <ClCompile Include="WinAndLoseMenu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -141,6 +142,7 @@
     <ClInclude Include="GameSetting.h" />
     <ClInclude Include="StartGame.h" />
     <ClInclude Include="Sound.h" />
+    <ClInclude Include="WinAndLoseHeader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
