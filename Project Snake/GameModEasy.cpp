@@ -1,5 +1,6 @@
 #include "GameModEasy.h"
 #include "GameSetting.h"
+#include "Records.h"
 
 //ЗАГРУЗКА ТЕКСТУР----------------------------------------------------------------
 
@@ -349,7 +350,8 @@ void GameLogicEasy() {
 clock_t start = clock();    //Необходим для отвязки FPS приложения от игры!!!!!!!
 //_______________________________________________________________________________
 
-
+bool NewRecordMenuFlag = false;
+int NewRecord, OldRecord;
 void EasyMode(SDL_Renderer* renderer, SDL_Event event, bool& Easy, bool& StartGame) {
 	if (!Pause) {
 		if (LoadTexturesEasyBool) { //ТО, ЧТО НУЖНО ЗАГРУЗИТЬ 1 РАЗ
@@ -359,8 +361,9 @@ void EasyMode(SDL_Renderer* renderer, SDL_Event event, bool& Easy, bool& StartGa
 			fontScore = TTF_OpenFont("Text.ttf", 54);
 			SnakeLenTTF = TTF_OpenFont("Text.ttf", 48);
 			LoadTexturesEasyBool = false;
+			ReadRecords();
 		}
-		if (!GameOver) //ОСНОВНАЯ ЧАСТЬ ИГРЫ
+		if (GameOver == false) //ОСНОВНАЯ ЧАСТЬ ИГРЫ
 		{
 			Activity(event,Pause);
 			if (clock() - start >= 500) { //Обновление рендера игры - КОНТРОЛЬ СКОРОСТИ
@@ -373,7 +376,14 @@ void EasyMode(SDL_Renderer* renderer, SDL_Event event, bool& Easy, bool& StartGa
 		}
 		else //ЕСЛИ ПРОИГРЫШ
 		{
-			Easy = false;
+			if (NewRecordMenuFlag == false) {
+				if (CheckNewRecord(score, 0,NewRecord,OldRecord)) //Проверка нового рекорда, его запись в ФАЙЛ
+					NewRecordMenuFlag = true;
+			}
+			if(NewRecordMenuFlag)
+				NewRecordMenu(renderer, event, BackToMenu, Restart,NewRecord,OldRecord,NewRecordMenuFlag);
+			else {
+				Easy = false;
 			StartGame = false;
 			Right = false;
 			Left = false;
@@ -382,10 +392,8 @@ void EasyMode(SDL_Renderer* renderer, SDL_Event event, bool& Easy, bool& StartGa
 			GameOver = false;
 			LoadTexturesEasyBool = true;
 			Dir = START;
-
 			score = 0;
 			xE = 600, yE = 720 / 2 - 40;
-			
 			DeleteTexturesEasy();
 			PlayFonMusic();
 			for (int i = 0; i < LenSnake; i++)
@@ -393,6 +401,7 @@ void EasyMode(SDL_Renderer* renderer, SDL_Event event, bool& Easy, bool& StartGa
 				SnakeX[i] = 0; SnakeY[i] = 0;
 			}
 			LenSnake = 1;
+			}
 		}
 		
 	}

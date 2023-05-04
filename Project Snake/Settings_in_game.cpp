@@ -133,6 +133,5 @@ void GameSettings(SDL_Renderer* renderer, SDL_Event event, bool& Pause,bool&Rest
 			}
 
 	SDL_RenderPresent(renderer);
-	SDL_Delay(16);
 
 }
