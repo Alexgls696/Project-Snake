@@ -246,7 +246,6 @@ void GameLogicEasy() {
 		EasyStr.Down = false;
 		EasyStr.Up = false;
 		break;
-		cout << "OK" << endl;
 	case UP:      // ÂÂÅÐÕ
 		EasyStr.Left = false;
 		EasyStr.Right = false;
@@ -303,8 +302,7 @@ void GameLogicEasy() {
 clock_t start = clock();    //Íåîáõîäèì äëÿ îòâÿçêè FPS ïðèëîæåíèÿ îò èãðû!!!!!!!
 //_______________________________________________________________________________
 
-bool NewRecordMenuFlag = false;
-int NewRecord, OldRecord;
+
 void EasyMode(SDL_Renderer* renderer, SDL_Event event, bool& Easy, bool& StartGame) {
 	if (!Pause) {
 		if (EasyStr.LoadTexturesEasyBool) { //ÒÎ, ×ÒÎ ÍÓÆÍÎ ÇÀÃÐÓÇÈÒÜ 1 ÐÀÇ
@@ -327,37 +325,26 @@ void EasyMode(SDL_Renderer* renderer, SDL_Event event, bool& Easy, bool& StartGa
 				SDL_RenderPresent(renderer);
 			}
 		}
-		else //ÅÑËÈ ÏÐÎÈÃÐÛØ
+		else //ÅÑËÈ ÈÃÐÀ ÇÅÂÅÐØÅÍÀ
 		{
-			if (NewRecordMenuFlag == false) {
-				if (CheckNewRecord(EasyStr.score, 0,NewRecord,OldRecord)) //Ïðîâåðêà íîâîãî ðåêîðäà, åãî çàïèñü â ÔÀÉË
+			if (check == true) {
+				if (CheckNewRecord(EasyStr.score, 0, NewRecord, OldRecord)) //Ïðîâåðêà íîâîãî ðåêîðäà, åãî çàïèñü â ÔÀÉË
+				{
 					NewRecordMenuFlag = true;
+					check = false;
+				}
+				else {
+					LoseMenuFlag = true;
+					check = false;
+				}
 			}
-			if(NewRecordMenuFlag)
-				NewRecordMenu(renderer, event, BackToMenu, Restart,NewRecord,OldRecord,NewRecordMenuFlag);
-			else {
-				Easy = false;
-			StartGame = false;
-			EasyStr.Right = false;
-			EasyStr.Left = false;
-			EasyStr.Down = false;
-			EasyStr.Up = false;
-			GameOver = false;
-			EasyStr.LoadTexturesEasyBool = true;
-			Dir = START;
-			EasyStr.score = 0;
-			EasyStr.xE = 600, EasyStr.yE = 720 / 2 - 40;
-			DeleteTexturesEasy();
-			PlayFonMusic();
-			for (int i = 0; i < EasyStr.LenSnake; i++)
-			{
-				EasyStr.SnakeX[i] = 0; EasyStr.SnakeY[i] = 0;
-			}
-			EasyStr.LenSnake = 1;
+				if (NewRecordMenuFlag)
+					NewRecordMenu(renderer, event, BackToMenu, Restart, NewRecord, OldRecord, NewRecordMenuFlag,check);
+				if (LoseMenuFlag)
+					LoseMenu(renderer, event, BackToMenu, Restart, NewRecord, OldRecord, LoseMenuFlag,check);	
 			}
 		}
-		
-	}
+	
 	else //ÅÑËÈ ÍÀÆÀÒÀ ÊËÀÂÈØÀ ÍÀÑÒÐÎÅÊ
 	{
 		GameSettings(renderer, event, Pause,Restart,BackToMenu);
@@ -381,6 +368,7 @@ void EasyMode(SDL_Renderer* renderer, SDL_Event event, bool& Easy, bool& StartGa
 		}
 		EasyStr.LenSnake = 1;
 		Restart = false;
+		EasyStr.flagFruit = false;
 		PlayEasySound();
 		EasyMode(renderer, event, Easy, StartGame);
 	}
@@ -398,7 +386,7 @@ void EasyMode(SDL_Renderer* renderer, SDL_Event event, bool& Easy, bool& StartGa
 
 		EasyStr.score = 0;
 		EasyStr.xE = 600, EasyStr.yE = 720 / 2 - 40;
-
+		EasyStr.flagFruit = false;
 		DeleteTexturesEasy();
 		PlayFonMusic();
 		for (int i = 0; i < EasyStr.LenSnake; i++)

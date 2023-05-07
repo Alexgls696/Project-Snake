@@ -26,10 +26,13 @@ bool GameOver = false;
 bool Pause = false;
 bool Restart = false;// Рестарт игры
 bool BackToMenu = false;
+bool NewRecordMenuFlag = false;
+bool LoseMenuFlag = false;
+int NewRecord, OldRecord;
+bool check = true;
 
 int Food_Number; //Номер еды (ТИП)
 int randomFood;
-
 
 string text;
 string LenSnText;
@@ -42,7 +45,6 @@ SDL_Rect TextRect = { 10,5,150,70 }; // Счет
 SDL_Rect TextLenSnake = { 10,80,250,70 }; // длина змейки
 SDL_Rect CRAY = { 279,0,722,720 }; //Красные границы
 SDL_Rect TO_MENU_RECT = { 1230,0,50,50 };
-
 
 //SDL_Rect 
 
