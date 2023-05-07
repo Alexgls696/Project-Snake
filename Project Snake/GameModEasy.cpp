@@ -1,5 +1,6 @@
 #include "GameModEasy.h"
 #include "GameSetting.h"
+#include "GameValues.h"
 #include "Records.h"
 
 //ЗАГРУЗКА ТЕКСТУР----------------------------------------------------------------
@@ -25,52 +26,6 @@ SDL_Texture* MenuIconTexture = NULL;
 
 SDL_Surface* to_menuSurface = NULL;
 SDL_Texture * to_menuTexture = NULL;
-
-//-------------------------------------------------------------------------------
-const int WIDTH_EASY1 = 280; // ИГРОВОЕ ПОЛЕ
-const int WIDTH_EASY2 = 960;
-const int HEIGHT_EASY1 = 0;
-const int HEIGHT_EASY2 = 680;
-
-int xE = 600, yE = 720 / 2 - 40; // ТЕКУЩАЯ КООРДИНАТА ГОЛОВЫ ЗМЕЙКИ - ОСНОВНАЯ
-int fruitX, fruitY;//Координаты еды
-int TempFruitX = 0; int TempFruitY = 0;//Текущая координата еды
-
-int score = 0;    //СЧЕТЧИК ОЧКОВ
-
-bool GameOver = false;
-bool LoadTexturesEasyBool = true;
-bool chooseFood = true;
-bool Left = false, Right = false, Up = false, Down = false;//Направление змейки
-bool flagFruit = false;//Проверка возможного спавна еды
-
-bool Pause = false;
-bool Restart = false;// Рестарт игры
-bool BackToMenu = false;
-
-int SnakeX[324]; int SnakeY[324];  //МАССИВЫ, хранящие координаты змейки. Реализация - Связные списки.
-int LenSnake = 1;
-int Food_Number; //Номер еды (ТИП)
-int randomFood;
-int SnakePosX[324]; int SnakePosY[324]; //Необходимы для случайного появления фрукта вне змейки
-
-string text;
-string LenSnText;
-string LenSn;
-string scoreOne;
-
-char LenSnakeChar[35];
-char textScore[15];
-SDL_Rect TextRect = { 10,5,150,70 }; // Счет
-SDL_Rect TextLenSnake = { 10,80,250,70 }; // длина змейки
-SDL_Rect CRAY = { 279,0,722,720 }; //Красные границы
-SDL_Rect TO_MENU_RECT = { 1230,0,50,50 };
-//SDL_Rect 
-
-enum Direction {
-	START = 0, LEFT, RIGHT, UP, DOWN
-};
-Direction Dir;
 
 SDL_Texture* Get_TextTextureEasy(SDL_Renderer*& renderer, char* text, TTF_Font* font) {
 	SDL_Surface* TextSurface = NULL;
@@ -142,24 +97,22 @@ void SetkaEasy(SDL_Renderer* renderer) {
 	}
 }
 
-int c; // Переменная - проверка  - счетчик ДЛЯ ПОЯВЛЕНИЯ ФРУКТОВ
-
 void FruitSpawn() {
 	
-	while (!flagFruit) {
+	while (!EasyStr.flagFruit) {
 		c = 0;
-		fruitX = rand() % (WIDTH_EASY2 - WIDTH_EASY1 + 1) + WIDTH_EASY1;
-		fruitY = rand() % (HEIGHT_EASY2 - HEIGHT_EASY1 + 1) + HEIGHT_EASY1;
-		if (fruitX % 40 == 0 && fruitY % 40 == 0) {
-			for (int i = 0; i < LenSnake;i++) {
-				if ((fruitX == SnakePosX[i] && fruitY == SnakePosY[i])||(TempFruitX==fruitX&&TempFruitY==fruitY)) { // Проверка неналожения на змейку и на место, где фрукт был в прошлый раз
+		EasyStr.fruitX = rand() % (WIDTH_EASY2 - WIDTH_EASY1 + 1) + WIDTH_EASY1;
+		EasyStr.fruitY = rand() % (HEIGHT_EASY2 - HEIGHT_EASY1 + 1) + HEIGHT_EASY1;
+		if (EasyStr.fruitX % 40 == 0 && EasyStr.fruitY % 40 == 0) {
+			for (int i = 0; i < EasyStr.LenSnake;i++) {
+				if ((EasyStr.fruitX == EasyStr.SnakePosX[i] && EasyStr.fruitY == EasyStr.SnakePosY[i])||(EasyStr.TempFruitX== EasyStr.fruitX&& EasyStr.TempFruitY== EasyStr.fruitY)) { // Проверка неналожения на змейку и на место, где фрукт был в прошлый раз
 					c++;
 				}
 			}
 			if (c == 0) {
-				TempFruitX = fruitX;
-				TempFruitY = fruitY;
-				flagFruit = true;
+				EasyStr.TempFruitX = EasyStr.fruitX;
+				EasyStr.TempFruitY = EasyStr.fruitY;
+				EasyStr.flagFruit = true;
 			}
 			else
 				continue;
@@ -173,10 +126,10 @@ void RenderGame(SDL_Renderer* RenderGame) {
 	text = u8"Счёт: ";
 	LenSnText = u8"Длина змейки: ";
 
-	LenSn = to_string(LenSnake);
+	LenSn = to_string(EasyStr.LenSnake);
 	LenSnText = LenSnText + LenSn;
 
-	scoreOne = to_string(score);
+	scoreOne = to_string(EasyStr.score);
 	text = text + scoreOne;
 
 	strcpy_s(textScore, text.c_str()); //Преобразование из string в char*
@@ -185,7 +138,7 @@ void RenderGame(SDL_Renderer* RenderGame) {
 	ScoreTexture = Get_TextTextureEasy(RenderGame, textScore, fontScore);
 	LenSnakeTexture = Get_SnakeLenTexture(RenderGame, LenSnakeChar, SnakeLenTTF);
 
-	if (chooseFood==true) {//Шансы появления еды определенного типа
+	if (EasyStr.chooseFood==true) {//Шансы появления еды определенного типа
 		randomFood = rand() % 100;
 		if (randomFood < 50)
 			Food_Number = 0;
@@ -193,7 +146,7 @@ void RenderGame(SDL_Renderer* RenderGame) {
 			Food_Number = 1;
 		if (randomFood >= 80 && randomFood < 100)
 			Food_Number = 2;
-		chooseFood = false;
+		EasyStr.chooseFood = false; // ЧТОБЫ ЕДА менялась один раз
 	}
 	SDL_SetRenderDrawColor(RenderGame, 201, 201, 201, 0);//ЦВЕТ ПОЛЯ
 	SDL_RenderClear(RenderGame);
@@ -213,20 +166,20 @@ void RenderGame(SDL_Renderer* RenderGame) {
 
 	for (int x = 280; x < 1000;x += 40) {
 		for (int y = 0; y < 720; y += 40) {
-			if (x == xE && y == yE) {
+			if (x == EasyStr.xE && y == EasyStr.yE) {
 				SDL_Rect rect = { x, y, 40,40 };
 				SDL_RenderCopy(RenderGame, SNAKE_EASY_TEXTURE, NULL, &rect); //ОТРИСОВКА ГОЛОВЫ ЗМЕЙКИ
 			}
-			for (int i = 0; i < LenSnake;i++) {
-				if (SnakeX[i] == x && SnakeY[i] == y) {
-					SDL_Rect rect = { SnakeX[i], SnakeY[i], 40,40 };
+			for (int i = 0; i < EasyStr.LenSnake;i++) {
+				if (EasyStr.SnakeX[i] == x && EasyStr.SnakeY[i] == y) {
+					SDL_Rect rect = { EasyStr.SnakeX[i], EasyStr.SnakeY[i], 40,40 };
 					SDL_RenderCopy(RenderGame, SNAKE_EASY_TEXTURE, NULL, &rect); //ОТРИСОВКА ГОЛОВЫ И ТЕЛА ЗМЕЙКИ
 				}
 
 			}
-			if (x == fruitX && y == fruitY) //ОТРИСОВКА ЕДЫ
+			if (x == EasyStr.fruitX && y == EasyStr.fruitY) //ОТРИСОВКА ЕДЫ
 			{
-				SDL_Rect Rect = { fruitX,fruitY,40,40 };
+				SDL_Rect Rect = { EasyStr.fruitX,EasyStr.fruitY,40,40 };
 				if (Food_Number == 0)
 					SDL_RenderCopy(RenderGame, AppleTexture, NULL, &Rect);
 				if (Food_Number == 1)
@@ -271,77 +224,77 @@ void Activity(SDL_Event event,bool &Pause) //КНОПКИ И МЫШЬ
 
 void GameLogicEasy() {
 	//Реализация нарастания и поворота тела змейки с помощью связного списка
-	int LastX = SnakeX[0], LastY = SnakeY[0];
+	int LastX = EasyStr.SnakeX[0], LastY = EasyStr.SnakeY[0];
 	int LastXX, LastYY;
-	SnakeX[0] = xE;
-	SnakeY[0] = yE;
+	EasyStr.SnakeX[0] = EasyStr.xE;
+	EasyStr.SnakeY[0] = EasyStr.yE;
 
-	for (int i = 0; i < LenSnake;i++) {
-		LastXX = SnakeX[i];
-		LastYY = SnakeY[i];
-		SnakeX[i] = LastX;
-		SnakeY[i] = LastY;
+	for (int i = 0; i < EasyStr.LenSnake;i++) {
+		LastXX = EasyStr.SnakeX[i];
+		LastYY = EasyStr.SnakeY[i];
+		EasyStr.SnakeX[i] = LastX;
+		EasyStr.SnakeY[i] = LastY;
 		LastX = LastXX;
 		LastY = LastYY;
-		SnakePosX[i] = LastX; //Запомнить координаты змейки и занести из в массив
-		SnakePosY[i] = LastY;
+		EasyStr.SnakePosX[i] = LastX; //Запомнить координаты змейки и занести из в массив
+		EasyStr.SnakePosY[i] = LastY;
 	}
 	switch (Dir) {
 	case LEFT:      // ВЛЕВО
-		Left = true;
-		Right = false;
-		Down = false;
-		Up = false;
+		EasyStr.Left = true;
+		EasyStr.Right = false;
+		EasyStr.Down = false;
+		EasyStr.Up = false;
 		break;
 		cout << "OK" << endl;
 	case UP:      // ВВЕРХ
-		Left = false;
-		Right = false;
-		Down = false;
-		Up = true;
+		EasyStr.Left = false;
+		EasyStr.Right = false;
+		EasyStr.Down = false;
+		EasyStr.Up = true;
 		break;
 	case RIGHT:      // ВПРАВО
-		Left = false;
-		Right = true;
-		Down = false;
-		Up = false
+		EasyStr.Left = false;
+		EasyStr.Right = true;
+		EasyStr.Down = false;
+		EasyStr.Up = false
 			; break;
 	case DOWN:      // ВНИЗ
-		Left = false;
-		Right = false;
-		Down = true;
-		Up = false;
+		EasyStr.Left = false;
+		EasyStr.Right = false;
+		EasyStr.Down = true;
+		EasyStr.Up = false;
 		break;
 	}
-	if (Right == true)
-		xE += 40;
-	if (Left == true)
-		xE -= 40;
-	if (Up == true)
-		yE -= 40;
-	if (Down == true)
-		yE += 40;
+	if (EasyStr.Right == true)
+		EasyStr.xE += 40;
+	if (EasyStr.Left == true)
+		EasyStr.xE -= 40;
+	if (EasyStr.Up == true)
+		EasyStr.yE -= 40;
+	if (EasyStr.Down == true)
+		EasyStr.yE += 40;
 
-	if ((xE == fruitX) && (yE == fruitY)) { // Если фрукт был съеден
+	if ((EasyStr.xE == EasyStr.fruitX) && (EasyStr.yE == EasyStr.fruitY)) { // Если фрукт был съеден
 		if (Food_Number == 0)
-			score++;
+			EasyStr.score++;
 		if (Food_Number == 1)
-			score += 2;
+			EasyStr.score += 2;
 		if (Food_Number == 2)
-			score += 3;
-		LenSnake++;
-		flagFruit = false;
-		chooseFood = true;
+			EasyStr.score += 3;
+		EasyStr.LenSnake++;
+		EasyStr.flagFruit = false;
+		EasyStr.chooseFood = true;
 		FruitSpawn();
 		UKUS_Sound();
 	}
-	for (int i = 1; i < LenSnake;i++) { //Проверка не был ли съеден хвост
-		if (SnakeX[i] == xE && SnakeY[i] == yE) {
+	for (int i = 1; i < EasyStr.LenSnake;i++) { //Проверка не был ли съеден хвост
+		if (EasyStr.SnakeX[i] == EasyStr.xE && EasyStr.SnakeY[i] == EasyStr.yE) {
 			cout << "GameOver!" << endl;
 			GameOver = true;
 		}
 	}
-	if ((xE < 280 || xE > 960) || (yE < 0 || yE > 680)) { // Условие выхода за рамки поля
+	if ((EasyStr.xE < 280 || EasyStr.xE > 960) || (EasyStr.yE < 0 || EasyStr.yE > 680)) { // Условие выхода за рамки поля
 		cout << "GameOver!" << endl; GameOver = true;
 	}
 }
@@ -354,13 +307,13 @@ bool NewRecordMenuFlag = false;
 int NewRecord, OldRecord;
 void EasyMode(SDL_Renderer* renderer, SDL_Event event, bool& Easy, bool& StartGame) {
 	if (!Pause) {
-		if (LoadTexturesEasyBool) { //ТО, ЧТО НУЖНО ЗАГРУЗИТЬ 1 РАЗ
+		if (EasyStr.LoadTexturesEasyBool) { //ТО, ЧТО НУЖНО ЗАГРУЗИТЬ 1 РАЗ
 			LoadTexturesEasy(renderer);
 			Dir = START;
 			PlayEasySound();
 			fontScore = TTF_OpenFont("Text.ttf", 54);
 			SnakeLenTTF = TTF_OpenFont("Text.ttf", 48);
-			LoadTexturesEasyBool = false;
+			EasyStr.LoadTexturesEasyBool = false;
 			ReadRecords();
 		}
 		if (GameOver == false) //ОСНОВНАЯ ЧАСТЬ ИГРЫ
@@ -377,7 +330,7 @@ void EasyMode(SDL_Renderer* renderer, SDL_Event event, bool& Easy, bool& StartGa
 		else //ЕСЛИ ПРОИГРЫШ
 		{
 			if (NewRecordMenuFlag == false) {
-				if (CheckNewRecord(score, 0,NewRecord,OldRecord)) //Проверка нового рекорда, его запись в ФАЙЛ
+				if (CheckNewRecord(EasyStr.score, 0,NewRecord,OldRecord)) //Проверка нового рекорда, его запись в ФАЙЛ
 					NewRecordMenuFlag = true;
 			}
 			if(NewRecordMenuFlag)
@@ -385,22 +338,22 @@ void EasyMode(SDL_Renderer* renderer, SDL_Event event, bool& Easy, bool& StartGa
 			else {
 				Easy = false;
 			StartGame = false;
-			Right = false;
-			Left = false;
-			Down = false;
-			Up = false;
+			EasyStr.Right = false;
+			EasyStr.Left = false;
+			EasyStr.Down = false;
+			EasyStr.Up = false;
 			GameOver = false;
-			LoadTexturesEasyBool = true;
+			EasyStr.LoadTexturesEasyBool = true;
 			Dir = START;
-			score = 0;
-			xE = 600, yE = 720 / 2 - 40;
+			EasyStr.score = 0;
+			EasyStr.xE = 600, EasyStr.yE = 720 / 2 - 40;
 			DeleteTexturesEasy();
 			PlayFonMusic();
-			for (int i = 0; i < LenSnake; i++)
+			for (int i = 0; i < EasyStr.LenSnake; i++)
 			{
-				SnakeX[i] = 0; SnakeY[i] = 0;
+				EasyStr.SnakeX[i] = 0; EasyStr.SnakeY[i] = 0;
 			}
-			LenSnake = 1;
+			EasyStr.LenSnake = 1;
 			}
 		}
 		
@@ -412,21 +365,21 @@ void EasyMode(SDL_Renderer* renderer, SDL_Event event, bool& Easy, bool& StartGa
 	if (Restart) //ПЕРЕЗАПУСК УРОВНЯ
 	{
 		Easy = true;
-		Right = false;
-		Left = false;
-		Down = false;
-		Up = false;
+		EasyStr.Right = false;
+		EasyStr.Left = false;
+		EasyStr.Down = false;
+		EasyStr.Up = false;
 		GameOver = false;
 		Dir = START;
-		LoadTexturesEasyBool = false;
-		score = 0;
-		xE = 600, yE = 720 / 2 - 40;
+		EasyStr.LoadTexturesEasyBool = false;
+		EasyStr.score = 0;
+		EasyStr.xE = 600, EasyStr.yE = 720 / 2 - 40;
 
-		for (int i = 0; i < LenSnake; i++)
+		for (int i = 0; i < EasyStr.LenSnake; i++)
 		{
-			SnakeX[i] = 0; SnakeY[i] = 0;
+			EasyStr.SnakeX[i] = 0; EasyStr.SnakeY[i] = 0;
 		}
-		LenSnake = 1;
+		EasyStr.LenSnake = 1;
 		Restart = false;
 		PlayEasySound();
 		EasyMode(renderer, event, Easy, StartGame);
@@ -435,24 +388,24 @@ void EasyMode(SDL_Renderer* renderer, SDL_Event event, bool& Easy, bool& StartGa
 	{
 		Easy = false;
 		StartGame = false;
-		Right = false;
-		Left = false;
-		Down = false;
-		Up = false;
+		EasyStr.Right = false;
+		EasyStr.Left = false;
+		EasyStr.Down = false;
+		EasyStr.Up = false;
 		GameOver = false;
-		LoadTexturesEasyBool = true;
+		EasyStr.LoadTexturesEasyBool = true;
 		Dir = START;
 
-		score = 0;
-		xE = 600, yE = 720 / 2 - 40;
+		EasyStr.score = 0;
+		EasyStr.xE = 600, EasyStr.yE = 720 / 2 - 40;
 
 		DeleteTexturesEasy();
 		PlayFonMusic();
-		for (int i = 0; i < LenSnake; i++)
+		for (int i = 0; i < EasyStr.LenSnake; i++)
 		{
-			SnakeX[i] = 0; SnakeY[i] = 0;
+			EasyStr.SnakeX[i] = 0; EasyStr.SnakeY[i] = 0;
 		}
-		LenSnake = 1;
+		EasyStr.LenSnake = 1;
 		BackToMenu = false;
 	}
 	SDL_Delay(16);

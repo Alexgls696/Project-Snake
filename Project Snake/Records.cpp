@@ -14,16 +14,15 @@ SDL_Texture* ReplayTexture = NULL;
 SDL_Surface* WHITE_Rec_Surface = NULL;
 SDL_Texture* WHITE_Rec_Texture = NULL;
 
-
 SDL_Texture* OldScoreTexture = NULL;
 SDL_Texture* NewScoreTexture = NULL;
-SDL_Rect OldRect = { 750,330,50,50 };
-SDL_Rect NewRect = { 750,395,50,50 };
+SDL_Rect OldRect = { 790,375,50,50 };
+SDL_Rect NewRect = { 710,460,50,50 };
 
 SDL_Rect WhiteRecRect = {0,0,1280,720};
 SDL_Rect RezRect = { 330, 70, 600, 600 };
-SDL_Rect ReplayRect = { 450,450,150,150 };
-SDL_Rect ToMenuRect = { 700,450,150,150 };
+SDL_Rect ReplayRect = { 550,550,75,75 };
+SDL_Rect ToMenuRect = { 650,550,75,75 };
 
 struct Rec {
 	string Game_mode;
@@ -120,7 +119,7 @@ void NewRecordMenu(SDL_Renderer* renderer,SDL_Event event, bool& BackToMenu, boo
 	
 	SDL_GetMouseState(&x, &y);
 	if ((event.type == SDL_MOUSEBUTTONDOWN) && (event.button.button == SDL_BUTTON_LEFT)) {
-		if (x >= 450 && x <= 600 && y >= 450 && y <= 600)//Replay
+		if (x >= 550 && x <= 625 && y >= 550 && y <= 625)//Replay
 		{
 			NewRecordMenuFlag = false;
 			OnceRec = true;
@@ -129,7 +128,7 @@ void NewRecordMenu(SDL_Renderer* renderer,SDL_Event event, bool& BackToMenu, boo
 			TTF_CloseFont(font);
 
 		}
-		if (x >= 700 && x <= 850 && y >= 450 && y <= 600)//Возврат в меню 
+		if (x >= 650 && x <= 725 && y >= 550 && y <= 625)//Возврат в меню 
 		{
 			NewRecordMenuFlag = false;
 			BackToMenu = true;

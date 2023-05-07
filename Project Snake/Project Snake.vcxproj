@@ -141,6 +141,7 @@
   <ItemGroup>
     <ClInclude Include="GameModEasy.h" />
     <ClInclude Include="GameSetting.h" />
+    <ClInclude Include="GameValues.h" />
     <ClInclude Include="Records.h" />
     <ClInclude Include="StartGame.h" />
     <ClInclude Include="Sound.h" />

@@ -47,7 +47,6 @@ void DrawGameMenuTexture(SDL_Renderer* renderer) {
 	SDL_RenderCopy(renderer, Pause_MenuTexture, NULL, &FON_PauseRect);
 	SDL_RenderCopy(renderer, GoGameTexture, NULL, &GoGameRect);
 	SDL_RenderCopy(renderer, ReGameTexture, NULL, &ReGameRect);
-	//SDL_RenderCopy(renderer, BackTexture, NULL, &MainRect);
 	SDL_RenderCopyEx(renderer, BackTexture, NULL, &MainRect, 0, NULL, SDL_FLIP_NONE); //Вращение текстуры на определенный угол!
 }
 
