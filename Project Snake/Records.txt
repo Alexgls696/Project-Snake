@@ -1,3 +1,3 @@
-Easy 53
-Normal 0
-Hard 0
+Easy 14 6 4
+Normal 0 0 0
+hard 0 0 0

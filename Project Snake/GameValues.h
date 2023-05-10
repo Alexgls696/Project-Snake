@@ -46,7 +46,6 @@ SDL_Rect TextLenSnake = { 10,80,250,70 }; // длина змейки
 SDL_Rect CRAY = { 279,0,722,720 }; //Красные границы
 SDL_Rect TO_MENU_RECT = { 1230,0,50,50 };
 
-//SDL_Rect 
 
 enum Direction {
 	START = 0, LEFT, RIGHT, UP, DOWN

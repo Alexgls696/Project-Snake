@@ -18,6 +18,10 @@ SDL_Texture* WHITE_Rec_Texture = NULL;
 
 SDL_Texture* OldScoreTexture = NULL;
 SDL_Texture* NewScoreTexture = NULL;
+
+SDL_Surface* WINSURFACE = NULL;
+SDL_Texture* WINTEXTURE = NULL;
+
 SDL_Rect OldRect = { 790,375,50,50 };
 SDL_Rect NewRect = { 710,460,50,50 };
 SDL_Rect FailOld = { 710,370,50,50 };
@@ -28,13 +32,14 @@ SDL_Rect RezRect = { 330, 70, 600, 600 };
 SDL_Rect ReplayRect = { 550,550,75,75 };
 SDL_Rect ToMenuRect = { 650,550,75,75 };
 
+
 struct Rec {
 	string Game_mode;
 	int Score;
 	int Score2;
 	int Score3;
 };
-
+Rec Records[3];
 
 void LoadTexturesRecord(SDL_Renderer* renderer) {
 	NewRecordMenuSurface = IMG_Load("Textures\\NewRecord.bmp");
@@ -90,18 +95,33 @@ char NewRec[10];
 
 bool OnceRec = true;
 TTF_Font* font = NULL;
+
+void ClearRecords() {
+	setlocale(LC_ALL, "rus");
+	ofstream file("Records.txt");
+	if (file) {
+		file << "Easy 0 0 0" << endl;
+		file << "Normal 0 0 0" << endl;
+		file << "hard 0 0 0" << endl;
+		file.close();
+		cout << "Рекорды очищены" << endl;
+	}
+	else {
+		cout << "ФАЙЛ НЕ БЫЛ ОТКРЫТ ДЛЯ ОЧИСТКИ!" << endl;
+	}
+}
 void ReadRecords() {
-	Rec Records[3];
+	
 	ifstream file("Records.txt");
 	if (!file)
 		cout << "Не удалось открыть файл рекордов." << endl;
 	else
 	{
 		for (int i = 0; i < 3;i++) {
-			file >> Records[i].Game_mode >> Records[i].Score;
+			file >> Records[i].Game_mode >> Records[i].Score >> Records[i].Score2 >> Records[i].Score3;
 		}
 		for (int i = 0; i < 3;i++) {
-			cout << Records[i].Game_mode << " " << Records[i].Score << " " << endl;
+			cout << Records[i].Game_mode << " " << Records[i].Score << " " << Records[i].Score2 <<" " << Records[i].Score3 << endl;
 		}
 		file.close();
 	}
@@ -109,7 +129,7 @@ void ReadRecords() {
 void LoseMenu(SDL_Renderer* renderer, SDL_Event event, bool& BackToMenu, bool& Restart, int NewRecord, int OldRecord, bool& LoseMenuFlag,bool&check) {
 	int x, y;
 	if (OnceRec == true) {
-		font = TTF_OpenFont("Text.ttf", 50);
+		font = TTF_OpenFont("Text.ttf", 80);
 		_itoa_s(NewRecord, NewRec, 10);
 		_itoa_s(OldRecord, OldRec, 10);
 		OldScoreTexture = GetRecordTextTexture(renderer, OldRec, font);
@@ -206,7 +226,7 @@ bool CheckNewRecord(int Score,int GameMode,int &NewRecord, int &OldRecord) {
 	else
 	{
 		for (int i = 0; i < 3; i++) {
-			file >> Records[i].Game_mode >> Records[i].Score;
+			file >> Records[i].Game_mode >> Records[i].Score >> Records[i].Score2 >> Records[i].Score3;
 		}
 		file.close();
 		for (int i = 0; i < 3; i++) {
@@ -216,26 +236,45 @@ bool CheckNewRecord(int Score,int GameMode,int &NewRecord, int &OldRecord) {
 					Records[i].Score = Score;
 					NewRecord = Score; // Запомнить новый рекорд
 					new_record = true;
+					break;
+				}
+				if (Score > Records[i].Score2 && Score < Records[i].Score) {
+					OldRecord = Records[i].Score; //Запомнить старый рекорд
+					Records[i].Score2 = Score;
+					NewRecord = Score;
+					
+					break;
+				}
+				if (Score > Records[i].Score3 && Score < Records[i].Score2) {
+					OldRecord = Records[i].Score; //Запомнить старый рекорд
+					Records[i].Score3 = Score;
+					NewRecord = Score;
+					
+					break;
 				}
 				else {
-					OldRecord = Records[i].Score; //Запомнить старый рекорд
-					Records[i].Score = Score;
+					OldRecord = Records[i].Score; 
 					NewRecord = Score;
 				}
 			}
 		}
 	}
+	ofstream new_file("Records.txt");
 			if (new_record == true) {
-				ofstream new_file("Records.txt");
+				
 				for (int i = 0; i < 3;i++) {
-					new_file << Records[i].Game_mode << " " << Records[i].Score << endl;
+					new_file << Records[i].Game_mode << " " << Records[i].Score << " " << Records[i].Score2<<" " << Records[i].Score3<< endl;
 				}
 				cout << "Новые рекорды успешно записаны в файл" << endl;
 				new_file.close();
 				return true;
 			}
 			else {
+				for (int i = 0; i < 3;i++) {
+					new_file << Records[i].Game_mode << " " << Records[i].Score << " " << Records[i].Score2 << " " << Records[i].Score3 << endl;
+				}
 				cout << "Рекорд не был побит" << endl;
+				cout << "Файл с рекордами обновлен" << endl;
 				return false;
 			}
 }

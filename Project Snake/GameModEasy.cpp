@@ -175,7 +175,6 @@ void RenderGame(SDL_Renderer* RenderGame) {
 					SDL_Rect rect = { EasyStr.SnakeX[i], EasyStr.SnakeY[i], 40,40 };
 					SDL_RenderCopy(RenderGame, SNAKE_EASY_TEXTURE, NULL, &rect); //ÎÒĞÈÑÎÂÊÀ ÃÎËÎÂÛ È ÒÅËÀ ÇÌÅÉÊÈ
 				}
-
 			}
 			if (x == EasyStr.fruitX && y == EasyStr.fruitY) //ÎÒĞÈÑÎÂÊÀ ÅÄÛ
 			{
@@ -187,7 +186,6 @@ void RenderGame(SDL_Renderer* RenderGame) {
 				if (Food_Number == 2)
 					SDL_RenderCopy(RenderGame, BananaTexture, NULL, &Rect);
 			}
-			
 		}
 	}
 }
@@ -396,5 +394,4 @@ void EasyMode(SDL_Renderer* renderer, SDL_Event event, bool& Easy, bool& StartGa
 		EasyStr.LenSnake = 1;
 		BackToMenu = false;
 	}
-	SDL_Delay(16);
 }

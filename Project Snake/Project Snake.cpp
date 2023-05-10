@@ -4,6 +4,7 @@
 #include "Sound.h"
 #include <iostream>
 #include "SDL_ttf.h"
+#include "Records.h"
 
 
 
@@ -13,16 +14,6 @@ SDL_Window* window = NULL;
 
 SDL_Texture* CloseGoodTexture = NULL;
 SDL_Texture* NoCloseTexture = NULL;
-SDL_Surface* ActiveClose = NULL;
-SDL_Texture* ACTIVE_CLOSE_Texture = NULL;
-SDL_Surface* ActiveHelp = NULL;
-SDL_Texture* ACTIVE_HELP_Texture = NULL;
-SDL_Surface* ActiveSTART = NULL;
-SDL_Texture* ACTIVE_START_Texture = NULL;
-SDL_Surface* ActiveSETTINGS = NULL;
-SDL_Texture* ACTIVE_SETTINGS_Texture = NULL;
-SDL_Surface* ActiveACHIV = NULL;
-SDL_Texture* ACTIVE_ACHIV_Texture = NULL;
 SDL_Surface* FON = NULL;
 SDL_Texture* FON_TEXTURE = NULL;
 SDL_Surface* StartGame = NULL;
@@ -61,8 +52,15 @@ SDL_Surface* ResetButtonSurface = NULL;
 SDL_Texture* ResetButtonTexture = NULL;
 SDL_Surface* TablicaRecSurface = NULL;
 SDL_Texture* TablicaRecTexture = NULL;
+SDL_Texture* RecordsScoreTexture = NULL;
 
-
+struct RecMenu {
+    string Game_mode;
+    int Score;
+    int Score2;
+    int Score3;
+};
+RecMenu RecordsMenu[3];
 
 bool init() //ПРОВЕРКА ЗАПУСКА ОКНА И SDL
 {
@@ -304,16 +302,66 @@ bool TablicaButton(int x, int y) {
         return true;
     return false;
 }
-void TablicaRec(SDL_Renderer* renderer, SDL_Event event,bool&MainMenu,bool&TablicaRecordov) {
-    SDL_Rect rect = { 0,0,1280,720 };
-    SDL_Rect CloseRect = { 1230,0,50,50 };
+bool ResetRecordsButton(int x, int y) {
+    if (x >= 470 && x <= 770 && y >= 420 && y <= 480) 
+        return true;
+    return false;
+}
+
+bool OnceRecMenu = true;
+char text[5];
+char text2[5];
+char text3[5];
+SDL_Rect rect = { 0,0,1280,720 };
+SDL_Rect CloseRect = { 1230,0,50,50 };
+SDL_Rect rectScore = { 460,260,70,100 };
+
+void TablicaRec(SDL_Renderer* renderer, SDL_Event event,bool&MainMenu,bool&TablicaRecordov,TTF_Font *font) {
+    setlocale(LC_ALL, "rus");
+    if (OnceRecMenu == true) {
+        ifstream file("Records.txt");
+        if (file) {
+            for (int i = 0; i < 3;i++) 
+            { file >> RecordsMenu[i].Game_mode >> RecordsMenu[i].Score >> RecordsMenu[i].Score2 >> RecordsMenu[i].Score3; }
+            OnceRecMenu = false;
+            file.close();
+        }
+        else {
+            cout << "Файл рекордов не был открыт!" << endl;
+            MainMenu = true;
+            TablicaRecordov = false;
+            return;
+        }
+    }
+   
     SDL_RenderCopy(renderer, TablicaRecTexture, NULL, &rect);
     int x, y;
+   
+    
+    for (int i = 0; i < 3; i++) {
+        _itoa_s(RecordsMenu[i].Score, text, 10);
+        RecordsScoreTexture = Get_TextTexture(renderer, text, font);
+        SDL_RenderCopy(renderer, RecordsScoreTexture, NULL, &rectScore);
+
+        _itoa_s(RecordsMenu[i].Score2, text2, 10);
+        RecordsScoreTexture = Get_TextTexture(renderer, text2, font);
+        rectScore.y = 370;
+        SDL_RenderCopy(renderer, RecordsScoreTexture, NULL, &rectScore);
+
+        _itoa_s(RecordsMenu[i].Score3, text3, 10);
+        rectScore.y = 480;
+        RecordsScoreTexture = Get_TextTexture(renderer, text3, font);
+        SDL_RenderCopy(renderer, RecordsScoreTexture, NULL, &rectScore);
+        rectScore.y = 260;
+        rectScore.x += 280;
+    }
+    rectScore = { 460,260,70,100 };
     SDL_GetMouseState(&x, &y);
     if(event.type=SDL_MOUSEBUTTONDOWN&&event.button.button == SDL_BUTTON_LEFT)
         if (x >= 1230 && x <= 1280 && y >= 0 && y <= 50) {
             MainMenu = true;
             TablicaRecordov = false;
+            OnceRecMenu = true;
             TapSound();
         }
     SDL_RenderCopy(renderer, NoCloseTexture, NULL, &CloseRect);
@@ -322,7 +370,6 @@ void TablicaRec(SDL_Renderer* renderer, SDL_Event event,bool&MainMenu,bool&Tabli
 bool HelpList1 = true;
 bool HelpList2 = false;
 SDL_Rect RulesRect = { 0,0,1280,720 };
-SDL_Rect CloseRect = { 1230,0,50,50 };
 SDL_Rect RightRulesRect = { 1230,310,50,50 };
 SDL_Rect LeftRulesRect = { 1230,370,50,50 };
 void Help(SDL_Renderer* renderer, SDL_Event event,bool&MainMenu,bool&Rules)//Правила игры
@@ -367,7 +414,7 @@ int main(int argc, char** argv)
     else {
         std::cout << SDL_GetNumRenderDrivers() << std::endl;
         SDL_Renderer* MenuRenderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED || SDL_RENDERER_PRESENTVSYNC);//acelerated - аппаратное ускорение, верт синхр.
-        LoadTexturesMainMenu(MenuRenderer); // ЗАГРУЖАЕТ ТЕКСТУРЫ МЕНЮ
+
         //РАСПОЛОЖЕНИЕ ТЕКСТУР
 
         SDL_Rect FON_RECT = { 0,0,1280,720 }; //ФОН
@@ -394,7 +441,9 @@ int main(int argc, char** argv)
 
         SDL_Rect VolumeOFF_Rect = { 475,290,40,40 };
 
-        SDL_Rect NameRect = { 300,0,600,150 }; // ПОЗИЦИЯ НАЗВАНИЯ
+        SDL_Rect NameRect = { 330,0,600,150 }; // ПОЗИЦИЯ НАЗВАНИЯ
+
+        SDL_Rect ResetButtonRect = { 470,420,300,60 };
         //--------------------------------------------------------------
 
         //FULLSCREENRECT
@@ -402,19 +451,26 @@ int main(int argc, char** argv)
 
         //ЗВУК
 
-        InitMusic(); //ИНИЦИАЛИЗАЦИЯ ЗВУКА
-        LoadSound(); //ЗАГРУЗКА ЗВУКА
-        PlayFonMusic(); //ФОНОВАЯ МУЗЫКА МЕНЮ (ВКЛЮЧАЕТ)
-        //ТЕКСТ
+        InitMusic(); 
+        LoadSound(); 
+        PlayFonMusic(); 
+        LoadTexturesMainMenu(MenuRenderer); 
+        ReadRecords();
 
         TTF_Init();
-        TTF_Font* font = TTF_OpenFont("Text.ttf", 24); //Шрифт при выходе
+        TTF_Font* font = TTF_OpenFont("Text.ttf", 24); 
         TTF_Font* SettingFont = TTF_OpenFont("Text.ttf", 56);
         TTF_Font* SettingMenuFont = TTF_OpenFont("Text.ttf", 36);
+       
 
         char text[] = u8"Вы уверены, что хотите выйти из игры?";
         char FullscreanText[] = u8"Полноэкранный режим";
         char SettingsMenu[] = u8"НАСТРОЙКИ";
+        char ResetRec[] = u8"Вы уверены, что хотите спросить рекорды?";
+
+        SDL_Texture* TextResetTexture = NULL;
+        TextResetTexture = Get_TextTexture(MenuRenderer, ResetRec, font);
+
 
         SDL_Texture* CloseTextTexture;
         CloseTextTexture = Get_TextTexture(MenuRenderer, text, font);
@@ -434,9 +490,9 @@ int main(int argc, char** argv)
         bool LoadDiffTexture = true;
         bool HelpMenu = false;
         bool TablicaRecordov = false;
+        bool ResetChoose = false;
         int Count = 0;
 
-        clock_t time = clock(); //Таймер вращения (СКОРОСТЬ)
         clock_t ESCAPE = clock();//ТАЙМЕР нажатия ESCAPE
         SDL_Event event;
         int i = 0;
@@ -462,6 +518,7 @@ int main(int argc, char** argv)
                         MainMenu = false;
                         GameStartDiff = true;
                         TapSound();
+                        continue; // ЧТОБЫ НЕ ПОВТОРЯЛОСЬ НАЖАТИЕ В ДРУГОМ МЕНЮ
                     }
                     if (CloseFunction(event.button.x, event.button.y)) {
                         MenuClose = true;
@@ -485,11 +542,10 @@ int main(int argc, char** argv)
                     }
                 }
                 //ВРАЩЕНИЕ ШЕСТЕРЕНКИ НАСТРОЕК - НАСТРОЙКИ
-                if (clock() - time >= 1) {
+           
                     i += 30;
                     SDL_RenderCopyEx(MenuRenderer, SETTING_Texture, NULL, &SETTING_RECT, i * (3.14 / 180), 0, SDL_FLIP_NONE); //ОТОБРАЖЕНИЕ ВРАЩЕНИЯ
-                    time = clock();
-                }
+                
                 if ((event.key.keysym.sym == SDLK_ESCAPE)) {
                     MenuClose = true;
                     MainMenu = false;
@@ -501,11 +557,10 @@ int main(int argc, char** argv)
                 DrawTextureMenu(MenuRenderer, WHITE_Texture, WHITE_RECT);
                 DrawTextureMenu(MenuRenderer, CloseGoodTexture, GOOD_RECT);
                 DrawTextureMenu(MenuRenderer, NoCloseTexture, NO_RECT);
-                DrawCloseTextTexture(MenuRenderer, CloseTextTexture);
+                DrawCloseTextTexture(MenuRenderer, CloseTextTexture); // отрисовка текста (не менял функцию, такая же, как и при выходе)
                 if ((event.type == SDL_MOUSEBUTTONDOWN) && (event.button.button == SDL_BUTTON_LEFT)) {
                     if (OK_CLOSE(event.button.x, event.button.y)) {
                         TapSound();
-                        SDL_Delay(500);
                         quit = true;
                     }
                     if (NO_CLOSE(event.button.x, event.button.y)) {
@@ -513,13 +568,16 @@ int main(int argc, char** argv)
                         MainMenu = true;
                         TapSound();
                     }
+                    
                 }
+          
             }
             if (SettingMenu == true) {
 
                 SDL_SetTextureAlphaMod(WHITE_Texture, 4); //ПОЛУПРОЗРАЧНОСТЬ
                 DrawTextureMenu(MenuRenderer, WHITE_Texture, WHITE_RECT);
                 DrawTextureMenu(MenuRenderer, SETTING_Texture_Back, SETTING_RECT_Back);
+                SDL_RenderCopy(MenuRenderer, ResetButtonTexture, NULL, &ResetButtonRect);
 
                 SDL_Rect VolumeRect = { X_Volume,300,20,20 };
 
@@ -546,12 +604,19 @@ int main(int argc, char** argv)
                     if (SoundONTexture(x, y, X_Volume)) {
                         Volume(100);
                     }
+                    if (SettingsMenuClose(event.button.x, event.button.y)) {
+                        MainMenu = true;
+                        SettingMenu = false;
+                        TapSound();
+                    }
+                    if (ResetRecordsButton(event.button.x, event.button.y)) {
+                        ResetChoose = true;
+                        SettingMenu = false;
+                        TapSound();
+                    }
+                    
                 }
-                if (SettingsMenuClose(event.button.x, event.button.y) && (event.type == SDL_MOUSEBUTTONDOWN) && (event.button.button == SDL_BUTTON_LEFT)) {
-                    MainMenu = true;
-                    SettingMenu = false;
-                    TapSound();
-                }
+            
                 if (FULLSCREEN_ON == false) {
                     DrawTextureMenu(MenuRenderer, NoCloseTexture, FULLSCREEN_RECT); // FULLSCREEN_TEXTURE
                     if (FullScreenMode(x, y) && (event.type == SDL_MOUSEBUTTONDOWN) && (event.button.button == SDL_BUTTON_LEFT)) {
@@ -568,14 +633,34 @@ int main(int argc, char** argv)
                     }
                 }
                 
-            } //ВЫБОР СЛОЖНОСТИ
+            } 
+            if (ResetChoose == true) {
+                SDL_SetTextureAlphaMod(WHITE_Texture, 5);             //Полупрозрачность для меню
+                DrawTextureMenu(MenuRenderer, WHITE_Texture, WHITE_RECT);
+                DrawTextureMenu(MenuRenderer, CloseGoodTexture, GOOD_RECT);
+                DrawTextureMenu(MenuRenderer, NoCloseTexture, NO_RECT);
+                DrawCloseTextTexture(MenuRenderer, TextResetTexture);
+                if ((event.type == SDL_MOUSEBUTTONDOWN) && (event.button.button == SDL_BUTTON_LEFT)) {
+                    if (OK_CLOSE(event.button.x, event.button.y)) {
+                        TapSound();
+                        ClearRecords();
+                        ResetChoose = false;
+                        SettingMenu = true;
+                    }
+                    if (NO_CLOSE(event.button.x, event.button.y)) {
+                        TapSound();
+                        ResetChoose = false;
+                        SettingMenu = true;
+                    }
+                }
+            }
             if (HelpMenu == true) {
                 Help(MenuRenderer, event,MainMenu,HelpMenu);
             }
             if (TablicaRecordov == true) {
-                TablicaRec(MenuRenderer, event,MainMenu,TablicaRecordov);
+                TablicaRec(MenuRenderer, event,MainMenu,TablicaRecordov,SettingFont);
             }
-            if (GameStartDiff == true) //ВЫБОР РЕЖИМА ИГРЫ
+            if (GameStartDiff == true) //ВЫБОР РЕЖИМА ИГРЫ //ВЫБОР СЛОЖНОСТИ
             {
                 MenuDiff(MenuRenderer, GameStartDiff, MainMenu, LoadDiffTexture, event, window);
             }
