@@ -31,7 +31,10 @@ SDL_Rect ToMenuRect = { 650,550,75,75 };
 struct Rec {
 	string Game_mode;
 	int Score;
+	int Score2;
+	int Score3;
 };
+
 
 void LoadTexturesRecord(SDL_Renderer* renderer) {
 	NewRecordMenuSurface = IMG_Load("Textures\\NewRecord.bmp");

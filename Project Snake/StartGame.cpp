@@ -105,8 +105,8 @@ void MenuDiff(SDL_Renderer* renderer, bool& FlagDiffMenu, bool& MainMenu, bool& 
 		if ((event.type == SDL_MOUSEBUTTONDOWN) && (event.button.button == SDL_BUTTON_LEFT)) {
 			TapDiff(x, y, Back, renderer, Easy, Normal, Hard, StartGame);
 		}
-		SDL_RenderPresent(renderer);
-		SDL_Delay(16);
+		//SDL_RenderPresent(renderer);
+		//SDL_Delay(16);
 	}
 	if (Back == true) {
 		SDL_DestroyTexture(EasyUpTexture);

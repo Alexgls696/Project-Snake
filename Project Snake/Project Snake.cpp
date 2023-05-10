@@ -49,7 +49,18 @@ SDL_Surface* VolumeOFFSurface = NULL;
 SDL_Texture* VolumeOFFTexture = NULL;
 SDL_Surface* NameSurface = NULL;
 SDL_Texture* NameTexture = NULL;
-
+SDL_Surface* Rules1Surface = NULL;
+SDL_Surface* Rules2Surface = NULL;
+SDL_Texture* Rules1Texture = NULL;
+SDL_Texture* Rules2Texture = NULL;
+SDL_Surface* rightSurface = NULL;
+SDL_Surface* leftSurface = NULL;
+SDL_Texture* rightTexture = NULL;
+SDL_Texture* leftTexture = NULL;
+SDL_Surface* ResetButtonSurface = NULL;
+SDL_Texture* ResetButtonTexture = NULL;
+SDL_Surface* TablicaRecSurface = NULL;
+SDL_Texture* TablicaRecTexture = NULL;
 
 
 
@@ -74,51 +85,12 @@ void DrawTextureMenu(SDL_Renderer* MenuRenderer, SDL_Texture* texture, SDL_Rect 
     SDL_RenderCopy(MenuRenderer, texture, NULL, &Rect);
 }
 
-void ActiveCLOSETexture(SDL_Renderer* MenuRenderer) {
-    SDL_Rect ACTIVE_CLOSE_RECT = { 530,380,220,100 };
-    DrawTextureMenu(MenuRenderer, ACTIVE_CLOSE_Texture, ACTIVE_CLOSE_RECT);
-}
 
-void ActiveHELPTexture(SDL_Renderer* MenuRenderer) {
-    SDL_Rect ACTIVE_HELP_RECT = { 530,270,220,100 };
-    DrawTextureMenu(MenuRenderer, ACTIVE_HELP_Texture, ACTIVE_HELP_RECT);
-}
 
-void ActiveSTARTTexture(SDL_Renderer* MenuRenderer) {
-    SDL_Rect ACTIVE_START_RECT = { 530,50,220,100 };
-    DrawTextureMenu(MenuRenderer, ACTIVE_START_Texture, ACTIVE_START_RECT);
-}
-
-void ActiveACHIVTexture(SDL_Renderer* MenuRenderer) {
-    SDL_Rect ACTIVE_SETTINGS_RECT = { 530,160,220,100 };
-    DrawTextureMenu(MenuRenderer, ACTIVE_SETTINGS_Texture, ACTIVE_SETTINGS_RECT);
-}
-
-void ActiveSettingsTexture(SDL_Renderer* MenuRenderer) {
-
-    SDL_Rect ACTIVE_ACHIV_RECT = { 1210,0,70,70 };
-    DrawTextureMenu(MenuRenderer, ACTIVE_ACHIV_Texture, ACTIVE_ACHIV_RECT);
-}
-
-void Tap(SDL_Renderer* MenuRenderer, int x, int y, bool& Start, bool& MainMenu) {
-    if ((x > 530 && x < 740) && (y > 150 && y < 250)) {
-        TapSound();
-        Start = true;
-        MainMenu = false;
-    }
-    if ((x > 530 && x < 740) && (y > 370 && y < 470)) {
-        TapSound();
-    }
-    if ((x > 530 && x < 740) && (y > 260 && y < 360)) {
-        TapSound();
-    }
-    if ((x > 530 && x < 740) && (y > 480 && y < 580)) {
-        TapSound();
-    }
-    if ((x >= 1210 && x <= 1280) && (y >= 0 && y <= 70)) {
-        TapSound();
-    }
-
+bool StartGameButton(int x, int y) {
+    if ((x > 530 && x < 740) && (y > 150 && y < 250)) 
+        return true;
+    return false;
 }
 
 void DrawSettingsMenuText(SDL_Renderer*& renderer, SDL_Texture* texture) {
@@ -216,39 +188,13 @@ void EditVolume(SDL_Renderer* renderer, SDL_Event event, SDL_Rect& Rect, SDL_Tex
 
 }
 
-
+//ЗАГРУЖАЕТ ТЕКСТУРЫ ГЛАВНОГО МЕНЮ
 void LoadTexturesMainMenu(SDL_Renderer* MenuRenderer)
 {
     NameSurface = IMG_Load("Textures\\NAME.bmp");
     SDL_SetColorKey(NameSurface, SDL_TRUE, SDL_MapRGB(NameSurface->format, 255, 255, 255));
     NameTexture = SDL_CreateTextureFromSurface(MenuRenderer, NameSurface);
     SDL_FreeSurface(NameSurface);
-
-
-    ActiveClose = IMG_Load("Textures\\CloseGameActive.bmp");
-    SDL_SetColorKey(ActiveClose, SDL_TRUE, SDL_MapRGB(ActiveClose->format, 255, 255, 255));
-    ACTIVE_CLOSE_Texture = SDL_CreateTextureFromSurface(MenuRenderer, ActiveClose);
-    SDL_FreeSurface(ActiveClose);
-
-    ActiveHelp = IMG_Load("Textures\\HelpACTIVE.bmp");
-    SDL_SetColorKey(ActiveHelp, SDL_TRUE, SDL_MapRGB(ActiveHelp->format, 255, 255, 255));
-    ACTIVE_HELP_Texture = SDL_CreateTextureFromSurface(MenuRenderer, ActiveHelp);
-    SDL_FreeSurface(ActiveHelp);
-
-    ActiveSTART = IMG_Load("Textures\\StartGameACTIVE.bmp");
-    SDL_SetColorKey(ActiveSTART, SDL_TRUE, SDL_MapRGB(ActiveSTART->format, 255, 255, 255));
-    ACTIVE_START_Texture = SDL_CreateTextureFromSurface(MenuRenderer, ActiveSTART);
-    SDL_FreeSurface(ActiveSTART);
-
-    ActiveSETTINGS = IMG_Load("Textures\\AchivACTIVE.bmp");
-    SDL_SetColorKey(ActiveSETTINGS, SDL_TRUE, SDL_MapRGB(ActiveSETTINGS->format, 255, 255, 255));
-    ACTIVE_SETTINGS_Texture = SDL_CreateTextureFromSurface(MenuRenderer, ActiveSETTINGS);
-    SDL_FreeSurface(ActiveSETTINGS);
-
-    ActiveACHIV = IMG_Load("Textures\\SettingsACTIVE.bmp");
-    SDL_SetColorKey(ActiveACHIV, SDL_TRUE, SDL_MapRGB(ActiveACHIV->format, 255, 255, 255));
-    ACTIVE_ACHIV_Texture = SDL_CreateTextureFromSurface(MenuRenderer, ActiveACHIV);
-    SDL_FreeSurface(ActiveACHIV);
 
     FON = IMG_Load("Textures\\FON_MENU.bmp");
     SDL_SetColorKey(FON, SDL_TRUE, SDL_MapRGB(FON->format, 255, 255, 255));
@@ -275,7 +221,7 @@ void LoadTexturesMainMenu(SDL_Renderer* MenuRenderer)
     CLOSE_Texture = SDL_CreateTextureFromSurface(MenuRenderer, CLOSE);
     SDL_FreeSurface(CLOSE);
 
-    GOOD = IMG_Load("Textures\\YesACTIVE.bmp");
+    GOOD = IMG_Load("Textures\\Yes.bmp");
     SDL_SetColorKey(GOOD, SDL_TRUE, SDL_MapRGB(GOOD->format, 255, 255, 255));
     CloseGoodTexture = SDL_CreateTextureFromSurface(MenuRenderer, GOOD);
     SDL_FreeSurface(GOOD);
@@ -284,7 +230,6 @@ void LoadTexturesMainMenu(SDL_Renderer* MenuRenderer)
     SDL_SetColorKey(NO, SDL_TRUE, SDL_MapRGB(NO->format, 255, 255, 255));
     NoCloseTexture = SDL_CreateTextureFromSurface(MenuRenderer, NO);
     SDL_FreeSurface(NO);
-
 
     //Текстура прозрачности (Беление экрана)
     WHITE = IMG_Load("Textures\\White.bmp");
@@ -316,10 +261,102 @@ void LoadTexturesMainMenu(SDL_Renderer* MenuRenderer)
     SDL_SetColorKey(VolumeOFFSurface, SDL_TRUE, SDL_MapRGB(VolumeOFFSurface->format, 255, 255, 255));
     VolumeOFFTexture = SDL_CreateTextureFromSurface(MenuRenderer, VolumeOFFSurface);
     SDL_FreeSurface(VolumeOFFSurface);
+
+    Rules1Surface = IMG_Load("Textures\\Rules 1.bmp");
+    SDL_SetColorKey(Rules1Surface, SDL_TRUE, SDL_MapRGB(Rules1Surface->format, 25, 25, 25));
+    Rules1Texture = SDL_CreateTextureFromSurface(MenuRenderer, Rules1Surface);
+    SDL_FreeSurface(Rules1Surface);
+
+    Rules2Surface = IMG_Load("Textures\\Rules 2.bmp");
+    SDL_SetColorKey(Rules2Surface, SDL_TRUE, SDL_MapRGB(Rules2Surface->format, 25, 25, 25));
+    Rules2Texture = SDL_CreateTextureFromSurface(MenuRenderer, Rules2Surface);
+    SDL_FreeSurface(Rules2Surface);
+
+    leftSurface = IMG_Load("Textures\\LEFT.bmp");
+    SDL_SetColorKey(leftSurface, SDL_TRUE, SDL_MapRGB(leftSurface->format, 255, 255, 255));
+    leftTexture = SDL_CreateTextureFromSurface(MenuRenderer, leftSurface);
+    SDL_FreeSurface(leftSurface);
+
+    rightSurface = IMG_Load("Textures\\RIGHT.bmp");
+    SDL_SetColorKey(rightSurface, SDL_TRUE, SDL_MapRGB(rightSurface->format, 255, 255, 255));
+    rightTexture = SDL_CreateTextureFromSurface(MenuRenderer, rightSurface);
+    SDL_FreeSurface(rightSurface);
+
+    ResetButtonSurface = IMG_Load("Textures\\RESET_RECORDS.bmp");
+    SDL_SetColorKey(ResetButtonSurface, SDL_TRUE, SDL_MapRGB(ResetButtonSurface->format, 255, 255, 255));
+    ResetButtonTexture = SDL_CreateTextureFromSurface(MenuRenderer, ResetButtonSurface);
+    SDL_FreeSurface(ResetButtonSurface);
+
+    TablicaRecSurface = IMG_Load("Textures\\TABL.bmp");
+    SDL_SetColorKey(TablicaRecSurface, SDL_TRUE, SDL_MapRGB(TablicaRecSurface->format, 25, 255, 255));
+    TablicaRecTexture = SDL_CreateTextureFromSurface(MenuRenderer, TablicaRecSurface);
+    SDL_FreeSurface(TablicaRecSurface);
 }
-//ЗАГРУЖАЕТ ТЕКСТУРЫ ГЛАВНОГО МЕНЮ
 
 
+bool HelpButton(int x, int y) {
+    if (y >= 370 && y <= 470 && x >= 530 && x <= 720)
+        return true;
+    return false;
+}
+bool TablicaButton(int x, int y) {
+    if(y >= 260&&y<=360&&x>=530&&x<=720)
+        return true;
+    return false;
+}
+void TablicaRec(SDL_Renderer* renderer, SDL_Event event,bool&MainMenu,bool&TablicaRecordov) {
+    SDL_Rect rect = { 0,0,1280,720 };
+    SDL_Rect CloseRect = { 1230,0,50,50 };
+    SDL_RenderCopy(renderer, TablicaRecTexture, NULL, &rect);
+    int x, y;
+    SDL_GetMouseState(&x, &y);
+    if(event.type=SDL_MOUSEBUTTONDOWN&&event.button.button == SDL_BUTTON_LEFT)
+        if (x >= 1230 && x <= 1280 && y >= 0 && y <= 50) {
+            MainMenu = true;
+            TablicaRecordov = false;
+            TapSound();
+        }
+    SDL_RenderCopy(renderer, NoCloseTexture, NULL, &CloseRect);
+}
+
+bool HelpList1 = true;
+bool HelpList2 = false;
+SDL_Rect RulesRect = { 0,0,1280,720 };
+SDL_Rect CloseRect = { 1230,0,50,50 };
+SDL_Rect RightRulesRect = { 1230,310,50,50 };
+SDL_Rect LeftRulesRect = { 1230,370,50,50 };
+void Help(SDL_Renderer* renderer, SDL_Event event,bool&MainMenu,bool&Rules)//Правила игры
+{
+    int x, y;
+    SDL_GetMouseState(&x, &y);
+    if (HelpList1) {
+        SDL_RenderCopy(renderer, Rules1Texture, NULL, &RulesRect);
+        SDL_RenderCopy(renderer, rightTexture, NULL, &RightRulesRect);
+        if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+            if (x >= 1230 && x <= 1280 && y >= 310 && y <= 360) {
+                TapSound();
+                HelpList1 = false;
+                HelpList2 = true;
+            }
+    }
+    if (HelpList2) {
+        SDL_RenderCopy(renderer, Rules2Texture, NULL, &RulesRect);
+        SDL_RenderCopy(renderer, leftTexture, NULL, &LeftRulesRect);
+        if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+            if (x >= 1230 && x <= 1280 && y >= 370 && y <= 420) {
+                TapSound();
+                HelpList1 = true;
+                HelpList2 = false;
+            }
+    }
+    if(event.type == SDL_MOUSEBUTTONDOWN&&event.button.button==SDL_BUTTON_LEFT)
+        if (x >= 1230 && x <= 1280 && y >= 0 && y <= 50) {
+            MainMenu = true;
+            Rules = false;
+            TapSound();
+        }
+    SDL_RenderCopy(renderer, NoCloseTexture, NULL, &CloseRect);
+}
 int main(int argc, char** argv)
 {
     SDL_DisplayMode displayMode;
@@ -352,7 +389,7 @@ int main(int argc, char** argv)
         SDL_Rect SETTING_RECT = { 1280 - 70,0,70,70 }; //РАСПОЛОЖЕНИЕ КНОПКИ НАСТРОЕК
 
         SDL_Rect SETTING_RECT_Back = { 330,110,600,600 }; // ЗАДНИЙ ФОН МЕНЮ НАСТРОЕК
-         
+
         SDL_Rect VolumeON_Rect = { 720,290,40,40 };
 
         SDL_Rect VolumeOFF_Rect = { 475,290,40,40 };
@@ -386,7 +423,7 @@ int main(int argc, char** argv)
 
 
         bool quit = false;
-   
+
         int x, y;
         int X_Volume = 700;
         bool MenuClose = false;
@@ -395,6 +432,8 @@ int main(int argc, char** argv)
         bool FULLSCREEN_ON = false;
         bool GameStartDiff = false;
         bool LoadDiffTexture = true;
+        bool HelpMenu = false;
+        bool TablicaRecordov = false;
         int Count = 0;
 
         clock_t time = clock(); //Таймер вращения (СКОРОСТЬ)
@@ -409,7 +448,7 @@ int main(int argc, char** argv)
             {
                 quit = true;
             }
-            
+
             if (MainMenu == true) {
                 DrawTextureMenu(MenuRenderer, FON_TEXTURE, FON_RECT);
                 DrawTextureMenu(MenuRenderer, StartGameTexture, StartGamePos);
@@ -419,30 +458,42 @@ int main(int argc, char** argv)
                 DrawTextureMenu(MenuRenderer, NameTexture, NameRect);
 
                 if ((event.type == SDL_MOUSEBUTTONDOWN) && (event.button.button == SDL_BUTTON_LEFT)) {
+                    if (StartGameButton(event.button.x, event.button.y)) {
+                        MainMenu = false;
+                        GameStartDiff = true;
+                        TapSound();
+                    }
                     if (CloseFunction(event.button.x, event.button.y)) {
                         MenuClose = true;
                         MainMenu = false;
+                        TapSound();
                     }
                     if (SettingMenuOpen(event.button.x, event.button.y)) {
                         MainMenu = false;
                         SettingMenu = true;
+                        TapSound();
                     }
-                    Tap(MenuRenderer, x, y, GameStartDiff, MainMenu);
-                    continue;
+                    if (HelpButton(event.button.x, event.button.y)) {
+                        MainMenu = false;
+                        HelpMenu = true;
+                        TapSound();
+                    }
+                    if (TablicaButton(event.button.x, event.button.y)) {
+                        MainMenu = false;
+                        TablicaRecordov = true;
+                        TapSound();
+                    }
                 }
-               //ВРАЩЕНИЕ ШЕСТЕРЕНКИ НАСТРОЕК - НАСТРОЙКИ
+                //ВРАЩЕНИЕ ШЕСТЕРЕНКИ НАСТРОЕК - НАСТРОЙКИ
                 if (clock() - time >= 1) {
                     i += 30;
                     SDL_RenderCopyEx(MenuRenderer, SETTING_Texture, NULL, &SETTING_RECT, i * (3.14 / 180), 0, SDL_FLIP_NONE); //ОТОБРАЖЕНИЕ ВРАЩЕНИЯ
                     time = clock();
                 }
-                if ((event.key.keysym.sym==SDLK_ESCAPE)){
+                if ((event.key.keysym.sym == SDLK_ESCAPE)) {
                     MenuClose = true;
                     MainMenu = false;
                 }
-                
-                SDL_RenderPresent(MenuRenderer);
-                SDL_Delay(16);
             }
             if (MenuClose == true) //МЕНЮ ЗАВЕРШЕНИЯ
             {
@@ -463,9 +514,6 @@ int main(int argc, char** argv)
                         TapSound();
                     }
                 }
-               
-                SDL_RenderPresent(MenuRenderer);
-                SDL_Delay(16);
             }
             if (SettingMenu == true) {
 
@@ -476,7 +524,7 @@ int main(int argc, char** argv)
                 SDL_Rect VolumeRect = { X_Volume,300,20,20 };
 
                 SDL_SetRenderDrawColor(MenuRenderer, 0, 0, 0, 0);
-                for (int i = 0; i < 3;i++) {
+                for (int i = 0; i < 3; i++) {
                     SDL_RenderDrawLine(MenuRenderer, 520, 308 + i, 710, 308 + i);
                 }
 
@@ -519,14 +567,20 @@ int main(int argc, char** argv)
                         FULLSCREEN_ON = false;
                     }
                 }
-                SDL_RenderPresent(MenuRenderer);
-                SDL_Delay(16);
+                
             } //ВЫБОР СЛОЖНОСТИ
-
+            if (HelpMenu == true) {
+                Help(MenuRenderer, event,MainMenu,HelpMenu);
+            }
+            if (TablicaRecordov == true) {
+                TablicaRec(MenuRenderer, event,MainMenu,TablicaRecordov);
+            }
             if (GameStartDiff == true) //ВЫБОР РЕЖИМА ИГРЫ
             {
                 MenuDiff(MenuRenderer, GameStartDiff, MainMenu, LoadDiffTexture, event, window);
             }
+            SDL_RenderPresent(MenuRenderer);
+            SDL_Delay(16);
         }
         SDL_DestroyTexture(CLOSE_Texture);
         SDL_DestroyTexture(FON_TEXTURE);
