@@ -9,5 +9,6 @@ void TapSound();
 void PlayEasySound();
 void UKUS_Sound();
 void LoadSound();
-
-
+void PlayNormalSound();
+void PlayHardSound();
+void PlayFail();

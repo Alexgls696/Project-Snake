@@ -1,6 +1,6 @@
 #include "GameSetting.h"
 #include "Sound.h"
-#include "GameModEasy.h"
+#include "GameMode.h"
 
 SDL_Surface* BackSurface = NULL;
 SDL_Texture* BackTexture = NULL;

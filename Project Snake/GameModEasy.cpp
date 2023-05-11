@@ -1,4 +1,4 @@
-#include "GameModEasy.h"
+#include "GameMode.h"
 #include "GameSetting.h"
 #include "GameValues.h"
 #include "Records.h"
@@ -6,7 +6,10 @@
 //ÇÀÃĞÓÇÊÀ ÒÅÊÑÒÓĞ----------------------------------------------------------------
 
 
-
+const int WIDTH_EASY1 = 280; // ÈÃĞÎÂÎÅ ÏÎËÅ
+const int WIDTH_EASY2 = 960;
+const int HEIGHT_EASY1 = 0;
+const int HEIGHT_EASY2 = 680;
 
 
 
@@ -67,6 +70,11 @@ void LoadTexturesEasy(SDL_Renderer* renderer) {
 	EasyStr.to_menuTexture = SDL_CreateTextureFromSurface(renderer, EasyStr.to_menuSurface);
 	SDL_FreeSurface(EasyStr.to_menuSurface);
 
+	EasyStr.HeadSnakeSurface = IMG_Load("Textures\\HeadSnakeEasy.bmp");
+	SDL_SetColorKey(EasyStr.HeadSnakeSurface, SDL_TRUE, SDL_MapRGB(EasyStr.HeadSnakeSurface->format, 255, 255, 255));
+	EasyStr.HeadSnakeTexture = SDL_CreateTextureFromSurface(renderer, EasyStr.HeadSnakeSurface);
+	SDL_FreeSurface(EasyStr.HeadSnakeSurface);
+
 }
 
 void DeleteTexturesEasy() {
@@ -76,6 +84,7 @@ void DeleteTexturesEasy() {
 	SDL_DestroyTexture(EasyStr.ScoreTexture);
 	SDL_DestroyTexture(EasyStr.LenSnakeTexture);
 	SDL_DestroyTexture(EasyStr.SNAKE_EASY_TEXTURE);
+	SDL_DestroyTexture(EasyStr.HeadSnakeTexture);
 }
 
 void SetkaEasy(SDL_Renderer* renderer) {
@@ -158,7 +167,20 @@ void RenderGame(SDL_Renderer* RenderGame) {
 		for (int y = 0; y < 720; y += 40) {
 			if (x == EasyStr.xE && y == EasyStr.yE) {
 				SDL_Rect rect = { x, y, 40,40 };
-				SDL_RenderCopy(RenderGame, EasyStr.SNAKE_EASY_TEXTURE, NULL, &rect); //ÎÒĞÈÑÎÂÊÀ ÃÎËÎÂÛ ÇÌÅÉÊÈ
+				//ÎÒĞÈÑÎÂÊÀ ÃÎËÎÂÛ ÇÌÅÉÊÈ
+				if (Dir==RIGHT)
+				SDL_RenderCopy(RenderGame, EasyStr.HeadSnakeTexture, NULL, &rect);
+				if (Dir == LEFT)
+					SDL_RenderCopyEx(RenderGame, EasyStr.HeadSnakeTexture, NULL, &rect,0,0,SDL_FLIP_HORIZONTAL); //ÎÒĞÈÑÎÂÊÀ ÃÎËÎÂÛ ÇÌÅÉÊÈ
+				if (Dir == UP)
+					SDL_RenderCopyEx(RenderGame, EasyStr.HeadSnakeTexture, NULL, &rect, 270, 0, SDL_FLIP_NONE);
+				if (Dir == DOWN)
+					SDL_RenderCopyEx(RenderGame, EasyStr.HeadSnakeTexture, NULL, &rect, 90, 0, SDL_FLIP_NONE);
+				if(Dir==START)
+					SDL_RenderCopy(RenderGame, EasyStr.HeadSnakeTexture, NULL, &rect);
+
+
+
 			}
 			for (int i = 0; i < EasyStr.LenSnake;i++) {
 				if (EasyStr.SnakeX[i] == x && EasyStr.SnakeY[i] == y) {
@@ -278,11 +300,12 @@ void GameLogicEasy() {
 	for (int i = 1; i < EasyStr.LenSnake;i++) { //Ïğîâåğêà íå áûë ëè ñúåäåí õâîñò
 		if (EasyStr.SnakeX[i] == EasyStr.xE && EasyStr.SnakeY[i] == EasyStr.yE) {
 			cout << "GameOver!" << endl;
+			PlayFail();
 			EasyStr.GameOver = true;
 		}
 	}
 	if ((EasyStr.xE < 280 || EasyStr.xE > 960) || (EasyStr.yE < 0 || EasyStr.yE > 680)) { // Óñëîâèå âûõîäà çà ğàìêè ïîëÿ
-		cout << "GameOver!" << endl; EasyStr.GameOver = true;
+		cout << "GameOver!" << endl; PlayFail(); EasyStr.GameOver = true;
 	}
 }
 

@@ -1,7 +1,7 @@
 #include "StartGame.h"
 #include "Sound.h"
 #include <ctime>
-#include "GameModEasy.h"
+#include "GameMode.h"
 #include "SDL_ttf.h"
 
 //ÒÅÊÑÒÓÐÛ ÌÅÍÞ
@@ -38,10 +38,14 @@ void TapDiff(int x, int y, bool& Back, SDL_Renderer* renderer, bool& Easy, bool&
 	}
 	if ((x > 530 && x < 740) && (y > 160 && y < 260)) {
 		TapSound();
+		Normal = true;
+		StartGame = true;
 		std::cout << "Normal mod started" << std::endl;
 	}
 	if ((x > 530 && x < 740) && (y > 270 && y < 370)) {
 		TapSound();
+		Hard = true;
+		StartGame = true;
 		std::cout << "Hard mod started" << std::endl;
 	}
 	if ((x > 530 && x < 740) && (y > 380 && y < 480)) {
@@ -121,7 +125,13 @@ void MenuDiff(SDL_Renderer* renderer, bool& FlagDiffMenu, bool& MainMenu, bool& 
 		return;
 	}
 	if (Easy == true) {
-
 		EasyMode(renderer, event,Easy,StartGame);
 	}
+	if (Normal == true) {
+		NormalMode(renderer, event, Normal, StartGame);
+	}
+	if (Hard == true) {
+		HardMode(renderer, event, Hard, StartGame);
+	}
+
 }
