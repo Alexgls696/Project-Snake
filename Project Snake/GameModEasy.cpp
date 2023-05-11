@@ -5,27 +5,17 @@
 
 //ÇÀÃĞÓÇÊÀ ÒÅÊÑÒÓĞ----------------------------------------------------------------
 
-TTF_Font* fontScore = NULL;
-TTF_Font* SnakeLenTTF = NULL;
 
-SDL_Texture* SNAKE_EASY_TEXTURE = NULL;
-SDL_Surface* SNAKE_EASY_SURFACE = NULL;
 
-SDL_Surface* AppleSurface = NULL;
-SDL_Texture* AppleTexture = NULL;
-SDL_Surface* BananaSurface = NULL;
-SDL_Texture* BananaTexture = NULL;
-SDL_Surface* KlubnicaSurface = NULL;
-SDL_Texture* KlubnicaTexture = NULL;
 
-SDL_Texture* ScoreTexture = NULL;
-SDL_Texture* LenSnakeTexture = NULL;
 
-SDL_Surface* MenuIconSurface = NULL;
-SDL_Texture* MenuIconTexture = NULL;
 
-SDL_Surface* to_menuSurface = NULL;
-SDL_Texture * to_menuTexture = NULL;
+enum Direction {
+	START = 0, LEFT, RIGHT, UP, DOWN
+};
+Direction Dir;
+
+ModeEasy EasyStr;
 
 SDL_Texture* Get_TextTextureEasy(SDL_Renderer*& renderer, char* text, TTF_Font* font) {
 	SDL_Surface* TextSurface = NULL;
@@ -47,45 +37,45 @@ SDL_Texture* Get_SnakeLenTexture(SDL_Renderer* renderer, char* text, TTF_Font* f
 
 void LoadTexturesEasy(SDL_Renderer* renderer) {
 
-	SNAKE_EASY_SURFACE = IMG_Load("Textures\\SnakeTextureEasy.bmp");
-	SDL_SetColorKey(SNAKE_EASY_SURFACE, SDL_TRUE, SDL_MapRGB(SNAKE_EASY_SURFACE->format, 255, 255, 255));
-	SNAKE_EASY_TEXTURE = SDL_CreateTextureFromSurface(renderer, SNAKE_EASY_SURFACE);
-	SDL_FreeSurface(SNAKE_EASY_SURFACE);
+	EasyStr.SNAKE_EASY_SURFACE = IMG_Load("Textures\\SnakeTextureEasy.bmp");
+	SDL_SetColorKey(EasyStr.SNAKE_EASY_SURFACE, SDL_TRUE, SDL_MapRGB(EasyStr.SNAKE_EASY_SURFACE->format, 255, 255, 255));
+	EasyStr.SNAKE_EASY_TEXTURE = SDL_CreateTextureFromSurface(renderer, EasyStr.SNAKE_EASY_SURFACE);
+	SDL_FreeSurface(EasyStr.SNAKE_EASY_SURFACE);
 
-	AppleSurface = IMG_Load("Textures\\apple.bmp");
-	SDL_SetColorKey(AppleSurface, SDL_TRUE, SDL_MapRGB(AppleSurface->format, 255, 255, 255));
-	AppleTexture = SDL_CreateTextureFromSurface(renderer, AppleSurface);
-	SDL_FreeSurface(AppleSurface);
+	EasyStr.AppleSurface = IMG_Load("Textures\\apple.bmp");
+	SDL_SetColorKey(EasyStr.AppleSurface, SDL_TRUE, SDL_MapRGB(EasyStr.AppleSurface->format, 255, 255, 255));
+	EasyStr.AppleTexture = SDL_CreateTextureFromSurface(renderer, EasyStr.AppleSurface);
+	SDL_FreeSurface(EasyStr.AppleSurface);
 
-	BananaSurface = IMG_Load("Textures\\BANAN.bmp");
-	SDL_SetColorKey(BananaSurface, SDL_TRUE, SDL_MapRGB(BananaSurface->format, 255, 255, 255));
-	BananaTexture = SDL_CreateTextureFromSurface(renderer, BananaSurface);
-	SDL_FreeSurface(BananaSurface);
+	EasyStr.BananaSurface = IMG_Load("Textures\\BANAN.bmp");
+	SDL_SetColorKey(EasyStr.BananaSurface, SDL_TRUE, SDL_MapRGB(EasyStr.BananaSurface->format, 255, 255, 255));
+	EasyStr.BananaTexture = SDL_CreateTextureFromSurface(renderer, EasyStr.BananaSurface);
+	SDL_FreeSurface(EasyStr.BananaSurface);
 
-	KlubnicaSurface = IMG_Load("Textures\\KLUBNIKA.bmp");
-	SDL_SetColorKey(KlubnicaSurface, SDL_TRUE, SDL_MapRGB(KlubnicaSurface->format, 255, 255, 255));
-	KlubnicaTexture = SDL_CreateTextureFromSurface(renderer, KlubnicaSurface);
-	SDL_FreeSurface(KlubnicaSurface);
+	EasyStr.KlubnicaSurface = IMG_Load("Textures\\KLUBNIKA.bmp");
+	SDL_SetColorKey(EasyStr.KlubnicaSurface, SDL_TRUE, SDL_MapRGB(EasyStr.KlubnicaSurface->format, 255, 255, 255));
+	EasyStr.KlubnicaTexture = SDL_CreateTextureFromSurface(renderer, EasyStr.KlubnicaSurface);
+	SDL_FreeSurface(EasyStr.KlubnicaSurface);
 
-	MenuIconSurface = IMG_Load("Textures\\MENU_ICON.bmp");
-	SDL_SetColorKey(MenuIconSurface, SDL_TRUE, SDL_MapRGB(MenuIconSurface->format, 255, 255, 255));
-	MenuIconTexture = SDL_CreateTextureFromSurface(renderer, MenuIconSurface);
-	SDL_FreeSurface(MenuIconSurface);
+	EasyStr.MenuIconSurface = IMG_Load("Textures\\MENU_ICON.bmp");
+	SDL_SetColorKey(EasyStr.MenuIconSurface, SDL_TRUE, SDL_MapRGB(EasyStr.MenuIconSurface->format, 255, 255, 255));
+	EasyStr.MenuIconTexture = SDL_CreateTextureFromSurface(renderer, EasyStr.MenuIconSurface);
+	SDL_FreeSurface(EasyStr.MenuIconSurface);
 
-	to_menuSurface = IMG_Load("Textures\\MENU_ICON.bmp");
-	SDL_SetColorKey(to_menuSurface, SDL_TRUE, SDL_MapRGB(to_menuSurface->format, 255, 255, 255));
-	to_menuTexture = SDL_CreateTextureFromSurface(renderer, to_menuSurface);
-	SDL_FreeSurface(to_menuSurface);
+	EasyStr.to_menuSurface = IMG_Load("Textures\\MENU_ICON.bmp");
+	SDL_SetColorKey(EasyStr.to_menuSurface, SDL_TRUE, SDL_MapRGB(EasyStr.to_menuSurface->format, 255, 255, 255));
+	EasyStr.to_menuTexture = SDL_CreateTextureFromSurface(renderer, EasyStr.to_menuSurface);
+	SDL_FreeSurface(EasyStr.to_menuSurface);
 
 }
 
 void DeleteTexturesEasy() {
-	SDL_DestroyTexture(AppleTexture);
-	SDL_DestroyTexture(BananaTexture);
-	SDL_DestroyTexture(KlubnicaTexture);
-	SDL_DestroyTexture(ScoreTexture);
-	SDL_DestroyTexture(LenSnakeTexture);
-	SDL_DestroyTexture(SNAKE_EASY_TEXTURE);
+	SDL_DestroyTexture(EasyStr.AppleTexture);
+	SDL_DestroyTexture(EasyStr.BananaTexture);
+	SDL_DestroyTexture(EasyStr.KlubnicaTexture);
+	SDL_DestroyTexture(EasyStr.ScoreTexture);
+	SDL_DestroyTexture(EasyStr.LenSnakeTexture);
+	SDL_DestroyTexture(EasyStr.SNAKE_EASY_TEXTURE);
 }
 
 void SetkaEasy(SDL_Renderer* renderer) {
@@ -100,16 +90,16 @@ void SetkaEasy(SDL_Renderer* renderer) {
 void FruitSpawn() {
 	
 	while (!EasyStr.flagFruit) {
-		c = 0;
+		EasyStr.c = 0;
 		EasyStr.fruitX = rand() % (WIDTH_EASY2 - WIDTH_EASY1 + 1) + WIDTH_EASY1;
 		EasyStr.fruitY = rand() % (HEIGHT_EASY2 - HEIGHT_EASY1 + 1) + HEIGHT_EASY1;
 		if (EasyStr.fruitX % 40 == 0 && EasyStr.fruitY % 40 == 0) {
 			for (int i = 0; i < EasyStr.LenSnake;i++) {
 				if ((EasyStr.fruitX == EasyStr.SnakePosX[i] && EasyStr.fruitY == EasyStr.SnakePosY[i])||(EasyStr.TempFruitX== EasyStr.fruitX&& EasyStr.TempFruitY== EasyStr.fruitY)) { // Ïğîâåğêà íåíàëîæåíèÿ íà çìåéêó è íà ìåñòî, ãäå ôğóêò áûë â ïğîøëûé ğàç
-					c++;
+					EasyStr.c++;
 				}
 			}
-			if (c == 0) {
+			if (EasyStr.c == 0) {
 				EasyStr.TempFruitX = EasyStr.fruitX;
 				EasyStr.TempFruitY = EasyStr.fruitY;
 				EasyStr.flagFruit = true;
@@ -123,68 +113,68 @@ void FruitSpawn() {
 void RenderGame(SDL_Renderer* RenderGame) {
 	
 
-	text = u8"Ñ÷¸ò: ";
-	LenSnText = u8"Äëèíà çìåéêè: ";
+	EasyStr.text = u8"Ñ÷¸ò: ";
+	EasyStr.LenSnText = u8"Äëèíà çìåéêè: ";
 
-	LenSn = to_string(EasyStr.LenSnake);
-	LenSnText = LenSnText + LenSn;
+	EasyStr.LenSn = to_string(EasyStr.LenSnake);
+	EasyStr.LenSnText = EasyStr.LenSnText + EasyStr.LenSn;
 
-	scoreOne = to_string(EasyStr.score);
-	text = text + scoreOne;
+	EasyStr.scoreOne = to_string(EasyStr.score);
+	EasyStr.text = EasyStr.text + EasyStr.scoreOne;
 
-	strcpy_s(textScore, text.c_str()); //Ïğåîáğàçîâàíèå èç string â char*
-	strcpy_s(LenSnakeChar, LenSnText.c_str());
+	strcpy_s(EasyStr.textScore, EasyStr.text.c_str()); //Ïğåîáğàçîâàíèå èç string â char*
+	strcpy_s(EasyStr.LenSnakeChar, EasyStr.LenSnText.c_str());
 
-	ScoreTexture = Get_TextTextureEasy(RenderGame, textScore, fontScore);
-	LenSnakeTexture = Get_SnakeLenTexture(RenderGame, LenSnakeChar, SnakeLenTTF);
+	EasyStr.ScoreTexture = Get_TextTextureEasy(RenderGame, EasyStr.textScore, EasyStr.fontScore);
+	EasyStr.LenSnakeTexture = Get_SnakeLenTexture(RenderGame, EasyStr.LenSnakeChar, EasyStr.SnakeLenTTF);
 
 	if (EasyStr.chooseFood==true) {//Øàíñû ïîÿâëåíèÿ åäû îïğåäåëåííîãî òèïà
-		randomFood = rand() % 100;
-		if (randomFood < 50)
-			Food_Number = 0;
-		if (randomFood >= 50 && randomFood < 80)
-			Food_Number = 1;
-		if (randomFood >= 80 && randomFood < 100)
-			Food_Number = 2;
+		EasyStr.randomFood = rand() % 100;
+		if (EasyStr.randomFood < 50)
+			EasyStr.Food_Number = 0;
+		if (EasyStr.randomFood >= 50 && EasyStr.randomFood < 80)
+			EasyStr.Food_Number = 1;
+		if (EasyStr.randomFood >= 80 && EasyStr.randomFood < 100)
+			EasyStr.Food_Number = 2;
 		EasyStr.chooseFood = false; // ×ÒÎÁÛ ÅÄÀ ìåíÿëàñü îäèí ğàç
 	}
 	SDL_SetRenderDrawColor(RenderGame, 201, 201, 201, 0);//ÖÂÅÒ ÏÎËß
 	SDL_RenderClear(RenderGame);
-	SDL_RenderCopy(RenderGame, ScoreTexture, NULL, &TextRect); //ÎÒĞÈÑÎÂÊÀ Ñ×ÅÒÀ
-	SDL_RenderCopy(RenderGame, LenSnakeTexture, NULL, &TextLenSnake);//ÎÒĞÈÑÎÂÊÀ ÄËÈÍÛ ÇÌÅÉÊÈ
-	SDL_RenderCopy(RenderGame, to_menuTexture, NULL, &TO_MENU_RECT);//ÎÒĞÈÑÎÂÊÀ ÈÊÎÍÊÈ ÌÅÍŞ
+	SDL_RenderCopy(RenderGame, EasyStr.ScoreTexture, NULL, &EasyStr.TextRect); //ÎÒĞÈÑÎÂÊÀ Ñ×ÅÒÀ
+	SDL_RenderCopy(RenderGame, EasyStr.LenSnakeTexture, NULL, &EasyStr.TextLenSnake);//ÎÒĞÈÑÎÂÊÀ ÄËÈÍÛ ÇÌÅÉÊÈ
+	SDL_RenderCopy(RenderGame, EasyStr.to_menuTexture, NULL, &EasyStr.TO_MENU_RECT);//ÎÒĞÈÑÎÂÊÀ ÈÊÎÍÊÈ ÌÅÍŞ
 
-	SDL_DestroyTexture(LenSnakeTexture); // ÄËß ÎÑÂÎÁÎÆÄÅÍÈß ÏÀÌßÒÈ
-	SDL_DestroyTexture(ScoreTexture); // ÄËß ÎÑÂÎÁÎÆÄÅÍÈß ÏÀÌßÒÈ
+	SDL_DestroyTexture(EasyStr.LenSnakeTexture); // ÄËß ÎÑÂÎÁÎÆÄÅÍÈß ÏÀÌßÒÈ
+	SDL_DestroyTexture(EasyStr.ScoreTexture); // ÄËß ÎÑÂÎÁÎÆÄÅÍÈß ÏÀÌßÒÈ
 
 	SDL_SetRenderDrawColor(RenderGame, 195, 195, 195, 0);//Ñåòî÷êà
 	SetkaEasy(RenderGame);                    //Ìîæíî âêëş÷èòü ïî æåëàíèş
 
 	SDL_SetRenderDrawColor(RenderGame, 255, 0, 0, 0);
 
-	SDL_RenderDrawRect(RenderGame, &CRAY);
+	SDL_RenderDrawRect(RenderGame, &EasyStr.CRAY);
 
 	for (int x = 280; x < 1000;x += 40) {
 		for (int y = 0; y < 720; y += 40) {
 			if (x == EasyStr.xE && y == EasyStr.yE) {
 				SDL_Rect rect = { x, y, 40,40 };
-				SDL_RenderCopy(RenderGame, SNAKE_EASY_TEXTURE, NULL, &rect); //ÎÒĞÈÑÎÂÊÀ ÃÎËÎÂÛ ÇÌÅÉÊÈ
+				SDL_RenderCopy(RenderGame, EasyStr.SNAKE_EASY_TEXTURE, NULL, &rect); //ÎÒĞÈÑÎÂÊÀ ÃÎËÎÂÛ ÇÌÅÉÊÈ
 			}
 			for (int i = 0; i < EasyStr.LenSnake;i++) {
 				if (EasyStr.SnakeX[i] == x && EasyStr.SnakeY[i] == y) {
 					SDL_Rect rect = { EasyStr.SnakeX[i], EasyStr.SnakeY[i], 40,40 };
-					SDL_RenderCopy(RenderGame, SNAKE_EASY_TEXTURE, NULL, &rect); //ÎÒĞÈÑÎÂÊÀ ÃÎËÎÂÛ È ÒÅËÀ ÇÌÅÉÊÈ
+					SDL_RenderCopy(RenderGame, EasyStr.SNAKE_EASY_TEXTURE, NULL, &rect); //ÎÒĞÈÑÎÂÊÀ ÃÎËÎÂÛ È ÒÅËÀ ÇÌÅÉÊÈ
 				}
 			}
 			if (x == EasyStr.fruitX && y == EasyStr.fruitY) //ÎÒĞÈÑÎÂÊÀ ÅÄÛ
 			{
 				SDL_Rect Rect = { EasyStr.fruitX,EasyStr.fruitY,40,40 };
-				if (Food_Number == 0)
-					SDL_RenderCopy(RenderGame, AppleTexture, NULL, &Rect);
-				if (Food_Number == 1)
-					SDL_RenderCopy(RenderGame, KlubnicaTexture, NULL, &Rect);
-				if (Food_Number == 2)
-					SDL_RenderCopy(RenderGame, BananaTexture, NULL, &Rect);
+				if (EasyStr.Food_Number == 0)
+					SDL_RenderCopy(RenderGame, EasyStr.AppleTexture, NULL, &Rect);
+				if (EasyStr.Food_Number == 1)
+					SDL_RenderCopy(RenderGame, EasyStr.KlubnicaTexture, NULL, &Rect);
+				if (EasyStr.Food_Number == 2)
+					SDL_RenderCopy(RenderGame, EasyStr.BananaTexture, NULL, &Rect);
 			}
 		}
 	}
@@ -273,11 +263,11 @@ void GameLogicEasy() {
 		EasyStr.yE += 40;
 
 	if ((EasyStr.xE == EasyStr.fruitX) && (EasyStr.yE == EasyStr.fruitY)) { // Åñëè ôğóêò áûë ñúåäåí
-		if (Food_Number == 0)
+		if (EasyStr.Food_Number == 0)
 			EasyStr.score++;
-		if (Food_Number == 1)
+		if (EasyStr.Food_Number == 1)
 			EasyStr.score += 2;
-		if (Food_Number == 2)
+		if (EasyStr.Food_Number == 2)
 			EasyStr.score += 3;
 		EasyStr.LenSnake++;
 		EasyStr.flagFruit = false;
@@ -288,11 +278,11 @@ void GameLogicEasy() {
 	for (int i = 1; i < EasyStr.LenSnake;i++) { //Ïğîâåğêà íå áûë ëè ñúåäåí õâîñò
 		if (EasyStr.SnakeX[i] == EasyStr.xE && EasyStr.SnakeY[i] == EasyStr.yE) {
 			cout << "GameOver!" << endl;
-			GameOver = true;
+			EasyStr.GameOver = true;
 		}
 	}
 	if ((EasyStr.xE < 280 || EasyStr.xE > 960) || (EasyStr.yE < 0 || EasyStr.yE > 680)) { // Óñëîâèå âûõîäà çà ğàìêè ïîëÿ
-		cout << "GameOver!" << endl; GameOver = true;
+		cout << "GameOver!" << endl; EasyStr.GameOver = true;
 	}
 }
 
@@ -302,19 +292,19 @@ clock_t start = clock();    //Íåîáõîäèì äëÿ îòâÿçêè FPS ïğèëîæåíèÿ îò èãğû!!!!!!
 
 
 void EasyMode(SDL_Renderer* renderer, SDL_Event event, bool& Easy, bool& StartGame) {
-	if (!Pause) {
+	if (!EasyStr.Pause) {
 		if (EasyStr.LoadTexturesEasyBool) { //ÒÎ, ×ÒÎ ÍÓÆÍÎ ÇÀÃĞÓÇÈÒÜ 1 ĞÀÇ
 			LoadTexturesEasy(renderer);
 			Dir = START;
 			PlayEasySound();
-			fontScore = TTF_OpenFont("Text.ttf", 54);
-			SnakeLenTTF = TTF_OpenFont("Text.ttf", 48);
+			EasyStr.fontScore = TTF_OpenFont("Text.ttf", 54);
+			EasyStr.SnakeLenTTF = TTF_OpenFont("Text.ttf", 48);
 			EasyStr.LoadTexturesEasyBool = false;
 			ReadRecords();
 		}
-		if (GameOver == false) //ÎÑÍÎÂÍÀß ×ÀÑÒÜ ÈÃĞÛ
+		if (EasyStr.GameOver == false) //ÎÑÍÎÂÍÀß ×ÀÑÒÜ ÈÃĞÛ
 		{
-			Activity(event,Pause);
+			Activity(event, EasyStr.Pause);
 			if (clock() - start >= 500) { //Îáíîâëåíèå ğåíäåğà èãğû - ÊÎÍÒĞÎËÜ ÑÊÎĞÎÑÒÈ
 				FruitSpawn();
 				GameLogicEasy();
@@ -325,36 +315,36 @@ void EasyMode(SDL_Renderer* renderer, SDL_Event event, bool& Easy, bool& StartGa
 		}
 		else //ÅÑËÈ ÈÃĞÀ ÇÅÂÅĞØÅÍÀ
 		{
-			if (check == true) {
-				if (CheckNewRecord(EasyStr.score, 0, NewRecord, OldRecord)) //Ïğîâåğêà íîâîãî ğåêîğäà, åãî çàïèñü â ÔÀÉË
+			if (EasyStr.check == true) {
+				if (CheckNewRecord(EasyStr.score, 0, EasyStr.NewRecord, EasyStr.OldRecord)) //Ïğîâåğêà íîâîãî ğåêîğäà, åãî çàïèñü â ÔÀÉË
 				{
-					NewRecordMenuFlag = true;
-					check = false;
+					EasyStr.NewRecordMenuFlag = true;
+					EasyStr.check = false;
 				}
 				else {
-					LoseMenuFlag = true;
-					check = false;
+					EasyStr.LoseMenuFlag = true;
+					EasyStr.check = false;
 				}
 			}
-				if (NewRecordMenuFlag)
-					NewRecordMenu(renderer, event, BackToMenu, Restart, NewRecord, OldRecord, NewRecordMenuFlag,check);
-				if (LoseMenuFlag)
-					LoseMenu(renderer, event, BackToMenu, Restart, NewRecord, OldRecord, LoseMenuFlag,check);	
+				if (EasyStr.NewRecordMenuFlag)
+					NewRecordMenu(renderer, event, EasyStr.BackToMenu, EasyStr.Restart, EasyStr.NewRecord, EasyStr.OldRecord, EasyStr.NewRecordMenuFlag, EasyStr.check);
+				if (EasyStr.LoseMenuFlag)
+					LoseMenu(renderer, event, EasyStr.BackToMenu, EasyStr.Restart, EasyStr.NewRecord, EasyStr.OldRecord, EasyStr.LoseMenuFlag, EasyStr.check);
 			}
 		}
 	
 	else //ÅÑËÈ ÍÀÆÀÒÀ ÊËÀÂÈØÀ ÍÀÑÒĞÎÅÊ
 	{
-		GameSettings(renderer, event, Pause,Restart,BackToMenu);
+		GameSettings(renderer, event, EasyStr.Pause, EasyStr.Restart, EasyStr.BackToMenu);
 	}
-	if (Restart) //ÏÅĞÅÇÀÏÓÑÊ ÓĞÎÂÍß
+	if (EasyStr.Restart) //ÏÅĞÅÇÀÏÓÑÊ ÓĞÎÂÍß
 	{
 		Easy = true;
 		EasyStr.Right = false;
 		EasyStr.Left = false;
 		EasyStr.Down = false;
 		EasyStr.Up = false;
-		GameOver = false;
+		EasyStr.GameOver = false;
 		Dir = START;
 		EasyStr.LoadTexturesEasyBool = false;
 		EasyStr.score = 0;
@@ -365,12 +355,12 @@ void EasyMode(SDL_Renderer* renderer, SDL_Event event, bool& Easy, bool& StartGa
 			EasyStr.SnakeX[i] = 0; EasyStr.SnakeY[i] = 0;
 		}
 		EasyStr.LenSnake = 1;
-		Restart = false;
+		EasyStr.Restart = false;
 		EasyStr.flagFruit = false;
 		PlayEasySound();
 		EasyMode(renderer, event, Easy, StartGame);
 	}
-	if (BackToMenu) //ÅÑËÈ ÁÛË ÂÎÇÂĞÀÒ Â ÃËÀÂÍÎÅ ÌÅÍŞ
+	if (EasyStr.BackToMenu) //ÅÑËÈ ÁÛË ÂÎÇÂĞÀÒ Â ÃËÀÂÍÎÅ ÌÅÍŞ
 	{
 		Easy = false;
 		StartGame = false;
@@ -378,7 +368,7 @@ void EasyMode(SDL_Renderer* renderer, SDL_Event event, bool& Easy, bool& StartGa
 		EasyStr.Left = false;
 		EasyStr.Down = false;
 		EasyStr.Up = false;
-		GameOver = false;
+		EasyStr.GameOver = false;
 		EasyStr.LoadTexturesEasyBool = true;
 		Dir = START;
 
@@ -392,6 +382,6 @@ void EasyMode(SDL_Renderer* renderer, SDL_Event event, bool& Easy, bool& StartGa
 			EasyStr.SnakeX[i] = 0; EasyStr.SnakeY[i] = 0;
 		}
 		EasyStr.LenSnake = 1;
-		BackToMenu = false;
+		EasyStr.BackToMenu = false;
 	}
 }

@@ -203,6 +203,7 @@ void NewRecordMenu(SDL_Renderer* renderer,SDL_Event event, bool& BackToMenu, boo
 			TTF_CloseFont(font);
 
 		}
+		
 		if (x >= 650 && x <= 725 && y >= 550 && y <= 625)//Возврат в меню 
 		{
 			NewRecordMenuFlag = false;

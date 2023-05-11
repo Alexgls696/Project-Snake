@@ -332,29 +332,27 @@ void TablicaRec(SDL_Renderer* renderer, SDL_Event event,bool&MainMenu,bool&Tabli
             TablicaRecordov = false;
             return;
         }
+        SDL_RenderCopy(renderer, TablicaRecTexture, NULL, &rect);
+        for (int i = 0; i < 3; i++) {
+            _itoa_s(RecordsMenu[i].Score, text, 10);
+            RecordsScoreTexture = Get_TextTexture(renderer, text, font);
+            SDL_RenderCopy(renderer, RecordsScoreTexture, NULL, &rectScore);
+
+            _itoa_s(RecordsMenu[i].Score2, text2, 10);
+            RecordsScoreTexture = Get_TextTexture(renderer, text2, font);
+            rectScore.y = 370;
+            SDL_RenderCopy(renderer, RecordsScoreTexture, NULL, &rectScore);
+
+            _itoa_s(RecordsMenu[i].Score3, text3, 10);
+            rectScore.y = 480;
+            RecordsScoreTexture = Get_TextTexture(renderer, text3, font);
+            SDL_RenderCopy(renderer, RecordsScoreTexture, NULL, &rectScore);
+            rectScore.y = 260;
+            rectScore.x += 280;
+        }
     }
-   
-    SDL_RenderCopy(renderer, TablicaRecTexture, NULL, &rect);
-    int x, y;
-   
     
-    for (int i = 0; i < 3; i++) {
-        _itoa_s(RecordsMenu[i].Score, text, 10);
-        RecordsScoreTexture = Get_TextTexture(renderer, text, font);
-        SDL_RenderCopy(renderer, RecordsScoreTexture, NULL, &rectScore);
-
-        _itoa_s(RecordsMenu[i].Score2, text2, 10);
-        RecordsScoreTexture = Get_TextTexture(renderer, text2, font);
-        rectScore.y = 370;
-        SDL_RenderCopy(renderer, RecordsScoreTexture, NULL, &rectScore);
-
-        _itoa_s(RecordsMenu[i].Score3, text3, 10);
-        rectScore.y = 480;
-        RecordsScoreTexture = Get_TextTexture(renderer, text3, font);
-        SDL_RenderCopy(renderer, RecordsScoreTexture, NULL, &rectScore);
-        rectScore.y = 260;
-        rectScore.x += 280;
-    }
+    int x, y;
     rectScore = { 460,260,70,100 };
     SDL_GetMouseState(&x, &y);
     if(event.type=SDL_MOUSEBUTTONDOWN&&event.button.button == SDL_BUTTON_LEFT)
@@ -553,7 +551,7 @@ int main(int argc, char** argv)
             }
             if (MenuClose == true) //МЕНЮ ЗАВЕРШЕНИЯ
             {
-                SDL_SetTextureAlphaMod(WHITE_Texture, 5);             //Полупрозрачность для меню
+                SDL_SetTextureAlphaMod(WHITE_Texture, 8);             //Полупрозрачность для меню
                 DrawTextureMenu(MenuRenderer, WHITE_Texture, WHITE_RECT);
                 DrawTextureMenu(MenuRenderer, CloseGoodTexture, GOOD_RECT);
                 DrawTextureMenu(MenuRenderer, NoCloseTexture, NO_RECT);

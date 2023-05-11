@@ -128,6 +128,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="GameModEasy.cpp" />
+    <ClCompile Include="GameModNormal.cpp" />
     <ClCompile Include="Records.cpp" />
     <ClCompile Include="Settings_in_game.cpp" />
     <ClCompile Include="StartGame.cpp" />
