@@ -10,6 +10,9 @@ Mix_Chunk* Fail = NULL;
 
 void Volume(int volume) {
 	Mix_VolumeMusic(volume);
+	Mix_VolumeChunk(Tap, volume);
+	Mix_VolumeChunk(UKUS, volume);
+	Mix_VolumeChunk(Fail, volume);
 }
 
 void PlayFonMusic() {

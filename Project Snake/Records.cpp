@@ -6,6 +6,8 @@ SDL_Surface* NewRecordMenuSurface = NULL;
 SDL_Texture* NewRecordMenuTexture = NULL;
 SDL_Surface* LoseRecordSurfaceMenu = NULL;
 SDL_Texture* LoseRecordTextureMenu = NULL;
+SDL_Surface* Win_Surface = NULL;
+SDL_Texture* WinTexture = NULL;
 
 SDL_Surface* ToMenuSurface = NULL;
 SDL_Texture* ToMenuTexture = NULL;
@@ -19,8 +21,6 @@ SDL_Texture* WHITE_Rec_Texture = NULL;
 SDL_Texture* OldScoreTexture = NULL;
 SDL_Texture* NewScoreTexture = NULL;
 
-SDL_Surface* WINSURFACE = NULL;
-SDL_Texture* WINTEXTURE = NULL;
 
 SDL_Rect OldRect = { 790,375,50,50 };
 SDL_Rect NewRect = { 710,460,50,50 };
@@ -62,6 +62,10 @@ void LoadTexturesRecord(SDL_Renderer* renderer) {
 	LoseRecordTextureMenu = SDL_CreateTextureFromSurface(renderer, LoseRecordSurfaceMenu);
 	SDL_FreeSurface(LoseRecordSurfaceMenu);
 
+	Win_Surface = IMG_Load("Textures//WIN.bmp");
+	SDL_SetColorKey(Win_Surface, SDL_TRUE, SDL_MapRGB(Win_Surface->format, 255, 255, 255));
+	WinTexture = SDL_CreateTextureFromSurface(renderer, Win_Surface);
+	SDL_FreeSurface(Win_Surface);
 
 	//Текстура прозрачности (Беление экрана)
 	WHITE_Rec_Surface = IMG_Load("Textures\\White.bmp");
@@ -216,7 +220,53 @@ void NewRecordMenu(SDL_Renderer* renderer,SDL_Event event, bool& BackToMenu, boo
 	}
 	SDL_RenderPresent(renderer);
 }
+void WinMenu(SDL_Renderer* renderer, SDL_Event event, bool& BackToMenu, bool& Restart, int NewRecord, int OldRecord, bool& WinMenuFlag, bool& check) {
+	 {
+		int x, y;
+		if (OnceRec == true) {
+			font = TTF_OpenFont("Text.ttf", 80);
+			_itoa_s(NewRecord, NewRec, 10);
+			_itoa_s(OldRecord, OldRec, 10);
+			OldScoreTexture = GetRecordTextTexture(renderer, OldRec, font);
+			NewScoreTexture = GetRecordTextTexture(renderer, NewRec, font);
+			LoadTexturesRecord(renderer);
+			OnceRec = false;
+		}
 
+		SDL_SetTextureAlphaMod(WHITE_Rec_Texture, 3);
+		SDL_RenderCopy(renderer, WHITE_Rec_Texture, NULL, &WhiteRecRect);
+		SDL_RenderCopy(renderer, WinTexture, NULL, &RezRect);
+		SDL_RenderCopy(renderer, ToMenuTexture, NULL, &ToMenuRect);
+		SDL_RenderCopy(renderer, ReplayTexture, NULL, &ReplayRect);
+		SDL_Rect FailOldWin = { 760,370,50,50 };
+		SDL_Rect FailNewWin = { 700,450,50,50 };
+		SDL_RenderCopy(renderer, OldScoreTexture, NULL, &FailOldWin);
+		SDL_RenderCopy(renderer, NewScoreTexture, NULL, &FailNewWin);
+
+		SDL_GetMouseState(&x, &y);
+		if ((event.type == SDL_MOUSEBUTTONDOWN) && (event.button.button == SDL_BUTTON_LEFT)) {
+			if (x >= 550 && x <= 625 && y >= 550 && y <= 625)  //Replay
+			{
+				WinMenuFlag = false;
+				OnceRec = true;
+				Restart = true;
+				check = true;
+				DeleteTexturesRecord();
+				TTF_CloseFont(font);
+			}
+			if (x >= 650 && x <= 725 && y >= 550 && y <= 625)//Возврат в меню 
+			{
+				WinMenuFlag = false;
+				BackToMenu = true;
+				OnceRec = true;
+				check = true;
+				DeleteTexturesRecord();
+				TTF_CloseFont(font);
+			}
+		}
+		SDL_RenderPresent(renderer);
+	}
+}
 bool CheckNewRecord(int Score,int GameMode,int &NewRecord, int &OldRecord) {
 	setlocale(LC_ALL, "rus");
 	Rec Records[3];

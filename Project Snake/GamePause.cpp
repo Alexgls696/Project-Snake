@@ -1,4 +1,4 @@
-#include "GameSetting.h"
+#include "GamePause.h"
 #include "Sound.h"
 #include "GameMode.h"
 

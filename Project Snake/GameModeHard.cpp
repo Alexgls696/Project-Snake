@@ -1,10 +1,7 @@
 #pragma once
-#include "GameSetting.h"
-#include "GameValues.h"
-#include "Records.h"
 
 #include "GameMode.h"
-#include "GameSetting.h"
+#include "GamePause.h"
 #include "GameValues.h"
 #include "Records.h"
 #include <iostream>
@@ -209,13 +206,25 @@ void ActivityHard(SDL_Event event, bool& Pause) //КНОПКИ И МЫШЬ
 			case SDLK_a:
 				if (DirHard != RIGHT)          // ВЛЕВО
 					DirHard = LEFT; break;
+			case SDLK_LEFT:
+				if (DirHard != RIGHT)          // ВЛЕВО
+					DirHard = LEFT; break;
 			case SDLK_w:
+				if (DirHard != DOWN)         // ВВЕРХ
+					DirHard = UP; break;
+			case SDLK_UP:
 				if (DirHard != DOWN)         // ВВЕРХ
 					DirHard = UP; break;
 			case SDLK_d:                // ВПРАВО
 				if (DirHard != LEFT)
 					DirHard = RIGHT; break;
+			case SDLK_RIGHT:
+				if (DirHard != LEFT)
+					DirHard = RIGHT; break;
 			case SDLK_s:                // ВНИЗ
+				if (DirHard != UP)
+					DirHard = DOWN; break;
+			case SDLK_DOWN:
 				if (DirHard != UP)
 					DirHard = DOWN; break;
 			case SDLK_ESCAPE:
@@ -230,7 +239,7 @@ void ActivityHard(SDL_Event event, bool& Pause) //КНОПКИ И МЫШЬ
 }
 
 void GameLogicHard() {
-	//Реализация нарастания и поворота тела змейки с помощью связного списка
+	//Реализация нарастания и поворота тела змейки
 	int LastX = HardStr.SnakeX[0], LastY = HardStr.SnakeY[0];
 	int LastXX, LastYY;
 	HardStr.SnakeX[0] = HardStr.xE;
@@ -243,7 +252,7 @@ void GameLogicHard() {
 		HardStr.SnakeY[i] = LastY;
 		LastX = LastXX;
 		LastY = LastYY;
-		HardStr.SnakePosX[i] = LastX; //Запомнить координаты змейки и занести из в массив
+		HardStr.SnakePosX[i] = LastX; //Запомнить координаты змейки и занести их в массив
 		HardStr.SnakePosY[i] = LastY;
 	}
 	switch (DirHard) {
@@ -294,6 +303,10 @@ void GameLogicHard() {
 		FruitSpawnHard();
 		UKUS_Sound();
 	}
+	if (HardStr.LenSnake == 144) {
+		HardStr.WIN = true;
+		HardStr.GameOver = true;
+	}
 	for (int i = 1; i < HardStr.LenSnake;i++) { //Проверка не был ли съеден хвост
 		if (HardStr.SnakeX[i] == HardStr.xE && HardStr.SnakeY[i] == HardStr.yE) {
 			cout << "GameOver!" << endl;
@@ -333,9 +346,9 @@ void HardMode(SDL_Renderer* renderer, SDL_Event event, bool& Normal, bool& Start
 				SDL_RenderPresent(renderer);
 			}
 		}
-		else //ЕСЛИ ИГРА ЗЕВЕРШЕНА
+		else //ЕСЛИ ИГРА ЗАВЕРШЕНА
 		{
-			if (HardStr.check == true) {
+			if (HardStr.check == true&&HardStr.WIN==false) {
 				if (CheckNewRecord(HardStr.score, 2, HardStr.NewRecord, HardStr.OldRecord)) //Проверка нового рекорда, его запись в ФАЙЛ
 				{
 					HardStr.NewRecordMenuFlag = true;
@@ -350,6 +363,17 @@ void HardMode(SDL_Renderer* renderer, SDL_Event event, bool& Normal, bool& Start
 				NewRecordMenu(renderer, event, HardStr.BackToMenu, HardStr.Restart, HardStr.NewRecord, HardStr.OldRecord, HardStr.NewRecordMenuFlag, HardStr.check);
 			if (HardStr.LoseMenuFlag)
 				LoseMenu(renderer, event, HardStr.BackToMenu, HardStr.Restart, HardStr.NewRecord, HardStr.OldRecord, HardStr.LoseMenuFlag, HardStr.check);
+
+			if (HardStr.WIN == true) {
+				if (HardStr.check == true) {
+					if (CheckNewRecord(HardStr.score, 2, HardStr.NewRecord, HardStr.OldRecord)) //Проверка нового рекорда, его запись в ФАЙЛ)
+						HardStr.check = false;
+					else
+						HardStr.check = false;
+				}
+
+				WinMenu(renderer, event, HardStr.BackToMenu, HardStr.Restart, HardStr.NewRecord, HardStr.OldRecord, HardStr.WIN, HardStr.check);
+			}
 		}
 	}
 

@@ -53,6 +53,25 @@ SDL_Texture* ResetButtonTexture = NULL;
 SDL_Surface* TablicaRecSurface = NULL;
 SDL_Texture* TablicaRecTexture = NULL;
 SDL_Texture* RecordsScoreTexture = NULL;
+SDL_Texture* TextResetTexture = NULL;
+
+//РАСПОЛОЖЕНИЕ ТЕКСТУР
+
+SDL_Rect FON_RECT = { 0,0,1280,720 }; //ФОН
+SDL_Rect StartGamePos = { 530,150,220,100 };//НАЧАТЬ ИГРУ РАСП
+SDL_Rect TablRecRect = { 530,260,220,100 };//ТАБЛИЦА РЕКОРДОВ РАСПОЛОЖЕНИЕ
+SDL_Rect HELP_RECT = { 530,370,220,100 };//СПРАВКА
+SDL_Rect CLOSE_RECT = { 530,480,220,100 };//МЕНЮ ЗАКРЫТИЯ
+SDL_Rect GOOD_RECT = { 740,340,80,80 }; //ЗАКРЫТИЕ
+SDL_Rect NO_RECT = { 480,355,50,50 };//ОТМЕНА закрытия
+SDL_Rect WHITE_RECT = { 0,0,1280,720 }; //БЕЛЕНИЕ ФОНА НА ВЕСЬ ЭКРАН
+SDL_Rect SETTING_RECT = { 1280 - 70,0,70,70 }; //РАСПОЛОЖЕНИЕ КНОПКИ НАСТРОЕК
+SDL_Rect SETTING_RECT_Back = { 330,110,600,600 }; // ЗАДНИЙ ФОН МЕНЮ НАСТРОЕК
+SDL_Rect VolumeON_Rect = { 720,290,40,40 };
+SDL_Rect VolumeOFF_Rect = { 475,290,40,40 };
+SDL_Rect NameRect = { 330,0,600,150 }; // ПОЗИЦИЯ НАЗВАНИЯ
+SDL_Rect ResetButtonRect = { 470,420,300,60 };
+SDL_Rect FULLSCREEN_RECT = { 720,350,30,30 };
 
 struct RecMenu {
     string Game_mode;
@@ -402,6 +421,28 @@ void Help(SDL_Renderer* renderer, SDL_Event event,bool&MainMenu,bool&Rules)//П�
         }
     SDL_RenderCopy(renderer, NoCloseTexture, NULL, &CloseRect);
 }
+
+void ResetRecords(SDL_Renderer* MenuRenderer, SDL_Event event, bool& ResetChoose, bool& SettingMenu) {
+    ResetRecords(MenuRenderer, event, ResetChoose, SettingMenu);
+    SDL_SetTextureAlphaMod(WHITE_Texture, 5);             //Полупрозрачность для меню
+    DrawTextureMenu(MenuRenderer, WHITE_Texture, WHITE_RECT);
+    DrawTextureMenu(MenuRenderer, CloseGoodTexture, GOOD_RECT);
+    DrawTextureMenu(MenuRenderer, NoCloseTexture, NO_RECT);
+    DrawCloseTextTexture(MenuRenderer, TextResetTexture);
+    if ((event.type == SDL_MOUSEBUTTONDOWN) && (event.button.button == SDL_BUTTON_LEFT)) {
+        if (OK_CLOSE(event.button.x, event.button.y)) {
+            TapSound();
+            ClearRecords();
+            ResetChoose = false;
+            SettingMenu = true;
+        }
+        if (NO_CLOSE(event.button.x, event.button.y)) {
+            TapSound();
+            ResetChoose = false;
+            SettingMenu = true;
+        }
+    }
+}
 int main(int argc, char** argv)
 {
     SDL_DisplayMode displayMode;
@@ -413,40 +454,7 @@ int main(int argc, char** argv)
         std::cout << SDL_GetNumRenderDrivers() << std::endl;
         SDL_Renderer* MenuRenderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED || SDL_RENDERER_PRESENTVSYNC);//acelerated - аппаратное ускорение, верт синхр.
 
-        //РАСПОЛОЖЕНИЕ ТЕКСТУР
-
-        SDL_Rect FON_RECT = { 0,0,1280,720 }; //ФОН
-
-        SDL_Rect StartGamePos = { 530,150,220,100 };//НАЧАТЬ ИГРУ РАСП
-
-        SDL_Rect TablRecRect = { 530,260,220,100 };//ТАБЛИЦА РЕКОРДОВ РАСПОЛОЖЕНИЕ
-
-        SDL_Rect HELP_RECT = { 530,370,220,100 };//СПРАВКА
-
-        SDL_Rect CLOSE_RECT = { 530,480,220,100 };//МЕНЮ ЗАКРЫТИЯ
-
-        SDL_Rect GOOD_RECT = { 740,340,80,80 }; //ЗАКРЫТИЕ
-
-        SDL_Rect NO_RECT = { 480,355,50,50 };//ОТМЕНА закрытия
-
-        SDL_Rect WHITE_RECT = { 0,0,1280,720 }; //БЕЛЕНИЕ ФОНА НА ВЕСЬ ЭКРАН
-
-        SDL_Rect SETTING_RECT = { 1280 - 70,0,70,70 }; //РАСПОЛОЖЕНИЕ КНОПКИ НАСТРОЕК
-
-        SDL_Rect SETTING_RECT_Back = { 330,110,600,600 }; // ЗАДНИЙ ФОН МЕНЮ НАСТРОЕК
-
-        SDL_Rect VolumeON_Rect = { 720,290,40,40 };
-
-        SDL_Rect VolumeOFF_Rect = { 475,290,40,40 };
-
-        SDL_Rect NameRect = { 330,0,600,150 }; // ПОЗИЦИЯ НАЗВАНИЯ
-
-        SDL_Rect ResetButtonRect = { 470,420,300,60 };
-        //--------------------------------------------------------------
-
-        //FULLSCREENRECT
-        SDL_Rect FULLSCREEN_RECT = { 720,350,30,30 };
-
+    
         //ЗВУК
 
         InitMusic(); 
@@ -466,10 +474,8 @@ int main(int argc, char** argv)
         char SettingsMenu[] = u8"НАСТРОЙКИ";
         char ResetRec[] = u8"Вы уверены, что хотите спросить рекорды?";
 
-        SDL_Texture* TextResetTexture = NULL;
+       
         TextResetTexture = Get_TextTexture(MenuRenderer, ResetRec, font);
-
-
         SDL_Texture* CloseTextTexture;
         CloseTextTexture = Get_TextTexture(MenuRenderer, text, font);
         SDL_Texture* SettingMenuTexture = Get_TextTexture(MenuRenderer, SettingsMenu, SettingMenuFont);
@@ -632,25 +638,9 @@ int main(int argc, char** argv)
                 }
                 
             } 
-            if (ResetChoose == true) {
-                SDL_SetTextureAlphaMod(WHITE_Texture, 5);             //Полупрозрачность для меню
-                DrawTextureMenu(MenuRenderer, WHITE_Texture, WHITE_RECT);
-                DrawTextureMenu(MenuRenderer, CloseGoodTexture, GOOD_RECT);
-                DrawTextureMenu(MenuRenderer, NoCloseTexture, NO_RECT);
-                DrawCloseTextTexture(MenuRenderer, TextResetTexture);
-                if ((event.type == SDL_MOUSEBUTTONDOWN) && (event.button.button == SDL_BUTTON_LEFT)) {
-                    if (OK_CLOSE(event.button.x, event.button.y)) {
-                        TapSound();
-                        ClearRecords();
-                        ResetChoose = false;
-                        SettingMenu = true;
-                    }
-                    if (NO_CLOSE(event.button.x, event.button.y)) {
-                        TapSound();
-                        ResetChoose = false;
-                        SettingMenu = true;
-                    }
-                }
+            if (ResetChoose == true) //СБРОС РЕКОРДОВ
+            {
+               
             }
             if (HelpMenu == true) {
                 Help(MenuRenderer, event,MainMenu,HelpMenu);

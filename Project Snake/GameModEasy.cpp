@@ -1,5 +1,5 @@
 #include "GameMode.h"
-#include "GameSetting.h"
+#include "GamePause.h"
 #include "GameValues.h"
 #include "Records.h"
 
@@ -297,6 +297,10 @@ void GameLogicEasy() {
 		FruitSpawn();
 		UKUS_Sound();
 	}
+	if (EasyStr.LenSnake == 324) {
+		EasyStr.WIN = true;
+		EasyStr.GameOver = true;
+	}
 	for (int i = 1; i < EasyStr.LenSnake;i++) { //Проверка не был ли съеден хвост
 		if (EasyStr.SnakeX[i] == EasyStr.xE && EasyStr.SnakeY[i] == EasyStr.yE) {
 			cout << "GameOver!" << endl;
@@ -338,7 +342,7 @@ void EasyMode(SDL_Renderer* renderer, SDL_Event event, bool& Easy, bool& StartGa
 		}
 		else //ЕСЛИ ИГРА ЗЕВЕРШЕНА
 		{
-			if (EasyStr.check == true) {
+			if (EasyStr.check == true&& EasyStr.WIN==false) {
 				if (CheckNewRecord(EasyStr.score, 0, EasyStr.NewRecord, EasyStr.OldRecord)) //Проверка нового рекорда, его запись в ФАЙЛ
 				{
 					EasyStr.NewRecordMenuFlag = true;
@@ -353,6 +357,15 @@ void EasyMode(SDL_Renderer* renderer, SDL_Event event, bool& Easy, bool& StartGa
 					NewRecordMenu(renderer, event, EasyStr.BackToMenu, EasyStr.Restart, EasyStr.NewRecord, EasyStr.OldRecord, EasyStr.NewRecordMenuFlag, EasyStr.check);
 				if (EasyStr.LoseMenuFlag)
 					LoseMenu(renderer, event, EasyStr.BackToMenu, EasyStr.Restart, EasyStr.NewRecord, EasyStr.OldRecord, EasyStr.LoseMenuFlag, EasyStr.check);
+				if (EasyStr.WIN == true) {
+					if (EasyStr.check == true) {
+						if (CheckNewRecord(EasyStr.score, 0, EasyStr.NewRecord, EasyStr.OldRecord)) //Проверка нового рекорда, его запись в ФАЙЛ)
+							EasyStr.check = false;
+						else
+							EasyStr.check = false;
+					}
+					WinMenu(renderer, event, EasyStr.BackToMenu, EasyStr.Restart, EasyStr.NewRecord, EasyStr.OldRecord, EasyStr.WIN, EasyStr.check);
+				}
 			}
 		}
 	

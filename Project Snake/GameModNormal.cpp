@@ -1,10 +1,6 @@
 #pragma once
-#include "GameSetting.h"
-#include "GameValues.h"
-#include "Records.h"
-
 #include "GameMode.h"
-#include "GameSetting.h"
+#include "GamePause.h"
 #include "GameValues.h"
 #include "Records.h"
 #include <iostream>
@@ -316,6 +312,10 @@ void GameLogicNormal() {
 		FruitSpawnNormal();
 		UKUS_Sound();
 	}
+	if (NormalStr.LenSnake == 225) {
+		NormalStr.WIN = true;
+		NormalStr.GameOver = true;
+	}
 	for (int i = 1; i < NormalStr.LenSnake;i++) { //Ïðîâåðêà íå áûë ëè ñúåäåí õâîñò
 		if (NormalStr.SnakeX[i] == NormalStr.xE && NormalStr.SnakeY[i] == NormalStr.yE) {
 			cout << "GameOver!" << endl;
@@ -358,7 +358,7 @@ void NormalMode(SDL_Renderer* renderer, SDL_Event event, bool& Normal, bool& Sta
 		}
 		else //ÅÑËÈ ÈÃÐÀ ÇÅÂÅÐØÅÍÀ
 		{
-			if (NormalStr.check == true) {
+			if (NormalStr.check == true&&NormalStr.WIN==false) {
 				if (CheckNewRecord(NormalStr.score, 1, NormalStr.NewRecord, NormalStr.OldRecord)) //Ïðîâåðêà íîâîãî ðåêîðäà, åãî çàïèñü â ÔÀÉË
 				{
 					NormalStr.NewRecordMenuFlag = true;
@@ -373,7 +373,20 @@ void NormalMode(SDL_Renderer* renderer, SDL_Event event, bool& Normal, bool& Sta
 				NewRecordMenu(renderer, event, NormalStr.BackToMenu, NormalStr.Restart, NormalStr.NewRecord, NormalStr.OldRecord, NormalStr.NewRecordMenuFlag, NormalStr.check);
 			if (NormalStr.LoseMenuFlag)
 				LoseMenu(renderer, event, NormalStr.BackToMenu, NormalStr.Restart, NormalStr.NewRecord, NormalStr.OldRecord, NormalStr.LoseMenuFlag, NormalStr.check);
+
+			if (NormalStr.WIN == true) {
+				if (NormalStr.check == true) {
+					if (CheckNewRecord(NormalStr.score, 1, NormalStr.NewRecord, NormalStr.OldRecord)) //Ïðîâåðêà íîâîãî ðåêîðäà, åãî çàïèñü â ÔÀÉË)
+						NormalStr.check = false;
+					else
+						NormalStr.check = false;
+				}
+
+				WinMenu(renderer, event, NormalStr.BackToMenu, NormalStr.Restart, NormalStr.NewRecord, NormalStr.OldRecord, NormalStr.WIN, NormalStr.check);
+			}
 		}
+
+
 	}
 
 	else //ÅÑËÈ ÍÀÆÀÒÀ ÊËÀÂÈØÀ ÍÀÑÒÐÎÅÊ

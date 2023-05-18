@@ -55,7 +55,7 @@ struct ModeEasy {
 	bool LoseMenuFlag = false;
 	int NewRecord, OldRecord;
 	bool check = true;
-
+	bool WIN = false;
 	int Food_Number; //Номер еды (ТИП)
 	int randomFood;
 
@@ -119,7 +119,7 @@ struct ModeNormal {
 	bool LoseMenuFlag = false;
 	int NewRecord, OldRecord;
 	bool check = true;
-
+	bool WIN = false;
 	int Food_Number; //Номер еды (ТИП)
 	int randomFood;
 
@@ -178,6 +178,7 @@ struct ModeHard {
 	bool BackToMenu = false;
 	bool NewRecordMenuFlag = false;
 	bool LoseMenuFlag = false;
+	bool WIN = false;
 	int NewRecord, OldRecord;
 	bool check = true;
 

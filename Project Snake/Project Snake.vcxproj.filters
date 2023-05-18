@@ -27,13 +27,16 @@
     <ClCompile Include="GameModEasy.cpp">
       <Filter>Файлы ресурсов</Filter>
     </ClCompile>
-    <ClCompile Include="Settings_in_game.cpp">
+    <ClCompile Include="GamePause.cpp">
       <Filter>Файлы ресурсов</Filter>
     </ClCompile>
     <ClCompile Include="Records.cpp">
       <Filter>Файлы ресурсов</Filter>
     </ClCompile>
     <ClCompile Include="GameModNormal.cpp">
+      <Filter>Файлы ресурсов</Filter>
+    </ClCompile>
+    <ClCompile Include="GameModeHard.cpp">
       <Filter>Файлы ресурсов</Filter>
     </ClCompile>
   </ItemGroup>
@@ -47,16 +50,16 @@
     <ClInclude Include="StartGame.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="GameModEasy.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="GameSetting.h">
+    <ClInclude Include="GamePause.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Records.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="GameValues.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="GameMode.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
