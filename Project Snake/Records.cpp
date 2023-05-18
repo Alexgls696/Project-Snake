@@ -124,9 +124,6 @@ void ReadRecords() {
 		for (int i = 0; i < 3;i++) {
 			file >> Records[i].Game_mode >> Records[i].Score >> Records[i].Score2 >> Records[i].Score3;
 		}
-		for (int i = 0; i < 3;i++) {
-			cout << Records[i].Game_mode << " " << Records[i].Score << " " << Records[i].Score2 <<" " << Records[i].Score3 << endl;
-		}
 		file.close();
 	}
 }

@@ -423,7 +423,6 @@ void Help(SDL_Renderer* renderer, SDL_Event event,bool&MainMenu,bool&Rules)//П�
 }
 
 void ResetRecords(SDL_Renderer* MenuRenderer, SDL_Event event, bool& ResetChoose, bool& SettingMenu) {
-    ResetRecords(MenuRenderer, event, ResetChoose, SettingMenu);
     SDL_SetTextureAlphaMod(WHITE_Texture, 5);             //Полупрозрачность для меню
     DrawTextureMenu(MenuRenderer, WHITE_Texture, WHITE_RECT);
     DrawTextureMenu(MenuRenderer, CloseGoodTexture, GOOD_RECT);
@@ -451,10 +450,9 @@ int main(int argc, char** argv)
         std::cout << "Не удалось запустить программу" << std::endl;
     }
     else {
-        std::cout << SDL_GetNumRenderDrivers() << std::endl;
+        SDL_GetNumRenderDrivers();
         SDL_Renderer* MenuRenderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED || SDL_RENDERER_PRESENTVSYNC);//acelerated - аппаратное ускорение, верт синхр.
 
-    
         //ЗВУК
 
         InitMusic(); 
@@ -640,7 +638,7 @@ int main(int argc, char** argv)
             } 
             if (ResetChoose == true) //СБРОС РЕКОРДОВ
             {
-               
+                ResetRecords(MenuRenderer, event, ResetChoose, SettingMenu);
             }
             if (HelpMenu == true) {
                 Help(MenuRenderer, event,MainMenu,HelpMenu);
